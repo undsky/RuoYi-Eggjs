@@ -296,7 +296,7 @@ module.exports = app => {
         ctx.body = {
           code: 200,
           msg: '操作成功',
-          checkedKeys,
+          checkedKeys: checkedKeys.map(item => item.menuId),
           menus: menuTree
         };
       } catch (err) {

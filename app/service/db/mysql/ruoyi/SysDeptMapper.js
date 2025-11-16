@@ -38,7 +38,7 @@ class SysDeptMapperService extends Service {
     }
 
     async selectDeptListByRoleId(values, params) {
-        return await this.db().selects(this.selectDeptListByRoleIdMapper(values, params));
+        return await this.db().select(this.selectDeptListByRoleIdMapper(values, params));
     }
 
     selectDeptByIdMapper(values, params) {

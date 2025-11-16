@@ -26,14 +26,14 @@
 + `/api/system/user` (POST) - 新增用户 ✅（已完成）
 + `/api/system/user` (PUT) - 修改用户 ✅（已完成）
 + `/api/system/user/:userIds` (DELETE) - 删除用户 ✅（已完成）
-+ `/api/system/user/resetPwd` - 重置密码
-+ `/api/system/user/changeStatus` - 修改状态
-+ `/api/system/user/authRole/:userId` - 查询授权角色
-+ `/api/system/user/authRole` (PUT) - 用户授权
-+ `/api/system/user/deptTree` - 部门树选择
-+ `/api/system/user/export` - 导出用户
-+ `/api/system/user/import` - 导入用户
-+ `/api/system/user/importTemplate` - 导入模板
++ `/api/system/user/resetPwd` - 重置密码 ✅（已完成）
++ `/api/system/user/changeStatus` - 修改状态 ✅（已完成）
++ `/api/system/user/authRole/:userId` - 查询授权角色 ✅（已完成）
++ `/api/system/user/authRole` (PUT) - 用户授权 ✅（已完成）
++ `/api/system/user/deptTree` - 部门树选择 ✅（已完成）
++ `/api/system/user/export` - 导出用户 ✅（已完成）
++ `/api/system/user/import` - 导入用户 ✅（已完成）
++ `/api/system/user/importTemplate` - 导入模板 ✅（已完成）
 
 #### 角色管理模块
 + `/api/system/role/list` - 角色列表（分页）

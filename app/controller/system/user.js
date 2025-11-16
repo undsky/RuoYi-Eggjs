@@ -7,6 +7,7 @@
 const Controller = require('egg').Controller;
 const { Route, HttpGet, HttpPost, HttpPut, HttpDelete } = require('egg-decorator-router');
 const { RequiresPermissions } = require('../../decorator/permission');
+const ExcelUtil = require('../../extend/excel');
 
 module.exports = app => {
 
@@ -465,7 +466,7 @@ module.exports = app => {
       const { ctx, service } = this;
       
       try {
-        const { userId, roleIds } = ctx.request.body;
+        const { userId, roleIds } = ctx.query;
         
         // 校验数据权限
         await service.system.user.checkUserDataScope(userId);
@@ -535,13 +536,30 @@ module.exports = app => {
         // 查询用户列表
         const list = await service.system.user.selectUserList(params);
         
-        // TODO: 实现 Excel 导出功能
-        // 目前返回 JSON 数据
-        ctx.body = {
-          code: 200,
-          msg: '导出成功',
-          data: list
-        };
+        // 定义 Excel 列配置
+        const columns = [
+          { header: '用户编号', key: 'userId', width: 12 },
+          { header: '用户名称', key: 'userName', width: 15 },
+          { header: '用户昵称', key: 'nickName', width: 15 },
+          { header: '部门名称', key: 'deptName', width: 20 },
+          { header: '手机号码', key: 'phonenumber', width: 15 },
+          { header: '用户性别', key: 'sexText', width: 10 },
+          { header: '帐号状态', key: 'statusText', width: 10 },
+          { header: '最后登录IP', key: 'loginIp', width: 15 },
+          { header: '最后登录时间', key: 'loginDate', width: 20 },
+          { header: '创建时间', key: 'createTime', width: 20 }
+        ];
+        
+        // 处理导出数据
+        const exportData = list.map(user => ({
+          ...user,
+          deptName: user.dept ? user.dept.deptName : '',
+          sexText: ExcelUtil.convertDictValue(user.sex, { '0': '男', '1': '女', '2': '未知' }),
+          statusText: ExcelUtil.convertDictValue(user.status, { '0': '正常', '1': '停用' })
+        }));
+        
+        // 导出 Excel
+        ExcelUtil.exportExcel(ctx, exportData, columns, '用户数据');
       } catch (err) {
         ctx.logger.error('导出用户失败:', err);
         ctx.body = {
@@ -553,23 +571,79 @@ module.exports = app => {
 
     /**
      * 导入用户
-     * POST /api/system/user/import
+     * POST /api/system/user/importData
      * 权限：system:user:import
      */
     @RequiresPermissions('system:user:import')
-    @HttpPost('/import')
+    @HttpPost('/importData')
     async importData() {
       const { ctx, service } = this;
       
       try {
-        const { updateSupport } = ctx.request.body;
+        // 获取上传的文件
+        const parts = ctx.multipart();
+        let fileBuffer = null;
+        let updateSupport = 'true' === ctx.query.updateSupport;
         
-        // TODO: 实现 Excel 导入功能
-        // 目前返回示例数据
-        const userList = []; // 解析 Excel 文件得到的用户列表
+        let part;
+        while ((part = await parts()) != null) {
+          
+            // 处理文件流
+            if (part.fieldname === 'file') {
+              const chunks = [];
+              part.on('data', chunk => {
+                chunks.push(chunk);
+              });
+              
+              await new Promise((resolve, reject) => {
+                part.on('end', () => {
+                  fileBuffer = Buffer.concat(chunks);
+                  resolve();
+                });
+                part.on('error', reject);
+              });
+            } else {
+              // 清理未使用的流
+              await part.resume();
+            }
+          
+        }
         
+        if (!fileBuffer || fileBuffer.length === 0) {
+          ctx.body = { code: 400, msg: '请选择要导入的文件' };
+          return;
+        }
+        
+        // 定义导入列配置
+        const columns = [
+          { header: '用户名称', key: 'userName', required: true, example: 'zhangsan' },
+          { header: '用户昵称', key: 'nickName', required: true, example: '张三' },
+          { header: '部门名称', key: 'deptName', required: false, example: '研发部门' },
+          { header: '手机号码', key: 'phonenumber', required: false, example: '13888888888' },
+          { header: '邮箱', key: 'email', required: false, example: 'zhangsan@example.com' },
+          { 
+            header: '用户性别', 
+            key: 'sex', 
+            required: false, 
+            example: '男',
+            dictMap: { '0': '男', '1': '女', '2': '未知' }
+          },
+          { 
+            header: '帐号状态', 
+            key: 'status', 
+            required: false, 
+            example: '正常',
+            dictMap: { '0': '正常', '1': '停用' }
+          },
+          { header: '备注', key: 'remark', required: false, example: '用户备注信息' }
+        ];
+        
+        // 解析 Excel 文件
+        const userList = ExcelUtil.importExcel(fileBuffer, columns);
+        
+        // 调用用户导入服务
         const operName = ctx.state.user.userName;
-        const message = await service.system.user.importUser(userList, updateSupport === 'true', operName);
+        const message = await service.system.user.importUser(userList, updateSupport, operName);
         
         ctx.body = {
           code: 200,
@@ -593,11 +667,20 @@ module.exports = app => {
       const { ctx } = this;
       
       try {
-        // TODO: 实现模板下载功能
-        ctx.body = {
-          code: 200,
-          msg: '下载成功'
-        };
+        // 定义模板列配置（与导入配置保持一致）
+        const columns = [
+          { header: '用户名称', key: 'userName', width: 15, example: 'zhangsan' },
+          { header: '用户昵称', key: 'nickName', width: 15, example: '张三' },
+          { header: '部门名称', key: 'deptName', width: 20, example: '研发部门' },
+          { header: '手机号码', key: 'phonenumber', width: 15, example: '13888888888' },
+          { header: '邮箱', key: 'email', width: 25, example: 'zhangsan@example.com' },
+          { header: '用户性别', key: 'sex', width: 10, example: '男' },
+          { header: '帐号状态', key: 'status', width: 10, example: '正常' },
+          { header: '备注', key: 'remark', width: 30, example: '用户备注信息' }
+        ];
+        
+        // 生成并下载模板
+        ExcelUtil.exportTemplate(ctx, columns, '用户导入模板');
       } catch (err) {
         ctx.logger.error('下载模板失败:', err);
         ctx.body = {

@@ -172,19 +172,11 @@ class DeptService extends Service {
     const role = await ctx.service.system.role.selectRoleById(roleId);
     const deptCheckStrictly = role && role.deptCheckStrictly;
     
-    const sql = `
-      SELECT d.dept_id
-      FROM sys_dept d
-      LEFT JOIN sys_role_dept rd ON d.dept_id = rd.dept_id
-      WHERE rd.role_id = ?
-      ${deptCheckStrictly ? 'AND d.dept_id NOT IN (SELECT d.parent_id FROM sys_dept d INNER JOIN sys_role_dept rd ON d.dept_id = rd.dept_id AND rd.role_id = ?)' : ''}
-      ORDER BY d.parent_id, d.order_num
-    `;
-    
-    const params = deptCheckStrictly ? [roleId, roleId] : [roleId];
-    const depts = await ctx.app.mysql.get('ruoyi').query(sql, params);
-    
-    return depts.map(d => d.deptId);
+    // 使用 Mapper 方法查询
+    return await ctx.service.db.mysql.ruoyi.sysDeptMapper.selectDeptListByRoleId(
+      [],
+      { roleId, deptCheckStrictly }
+    );
   }
 
   /**

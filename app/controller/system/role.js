@@ -7,6 +7,7 @@
 const Controller = require('egg').Controller;
 const { Route, HttpGet, HttpPost, HttpPut, HttpDelete } = require('egg-decorator-router');
 const { RequiresPermissions } = require('../../decorator/permission');
+const ExcelUtil = require('../../extend/excel');
 
 module.exports = app => {
 
@@ -303,52 +304,21 @@ module.exports = app => {
 
     /**
      * 查询已分配用户角色列表
-     * GET /api/system/role/allocatedList
+     * GET /api/system/role/authUser/allocatedList
      * 权限：system:role:list
      */
     @RequiresPermissions('system:role:list')
-    @HttpGet('/allocatedList')
+    @HttpGet('/authUser/allocatedList')
     async allocatedList() {
       const { ctx, service } = this;
       
       try {
         const params = ctx.query;
         
-        // 分页参数
-        const pageNum = parseInt(params.pageNum) || 1;
-        const pageSize = parseInt(params.pageSize) || 10;
+        // 查询已分配用户角色列表
+        const result = await service.system.user.selectAllocatedList(params);
         
-        // 构造查询参数
-        const userParams = {
-          userName: params.userName,
-          phonenumber: params.phonenumber,
-          roleId: params.roleId
-        };
-        
-        // 查询已分配用户列表
-        const list = await service.system.user.selectUserList(userParams);
-        
-        // 过滤：只保留拥有该角色的用户
-        const roleId = parseInt(params.roleId);
-        const filteredList = [];
-        for (const user of list) {
-          const userRoles = await service.system.role.selectRolesByUserId(user.userId);
-          if (userRoles.some(r => r.roleId === roleId)) {
-            filteredList.push(user);
-          }
-        }
-        
-        // 手动分页
-        const total = filteredList.length;
-        const start = (pageNum - 1) * pageSize;
-        const rows = filteredList.slice(start, start + pageSize);
-        
-        ctx.body = {
-          code: 200,
-          msg: '查询成功',
-          rows,
-          total
-        };
+        ctx.body = result;
       } catch (err) {
         ctx.logger.error('查询已分配用户列表失败:', err);
         ctx.body = {
@@ -360,51 +330,21 @@ module.exports = app => {
 
     /**
      * 查询未分配用户角色列表
-     * GET /api/system/role/unallocatedList
+     * GET /api/system/role/authUser/unallocatedList
      * 权限：system:role:list
      */
     @RequiresPermissions('system:role:list')
-    @HttpGet('/unallocatedList')
+    @HttpGet('/authUser/unallocatedList')
     async unallocatedList() {
       const { ctx, service } = this;
       
       try {
         const params = ctx.query;
         
-        // 分页参数
-        const pageNum = parseInt(params.pageNum) || 1;
-        const pageSize = parseInt(params.pageSize) || 10;
+        // 查询未分配用户角色列表
+        const result = await service.system.user.selectUnallocatedList(params);
         
-        // 构造查询参数
-        const userParams = {
-          userName: params.userName,
-          phonenumber: params.phonenumber
-        };
-        
-        // 查询所有用户
-        const list = await service.system.user.selectUserList(userParams);
-        
-        // 过滤：只保留没有该角色的用户
-        const roleId = parseInt(params.roleId);
-        const filteredList = [];
-        for (const user of list) {
-          const userRoles = await service.system.role.selectRolesByUserId(user.userId);
-          if (!userRoles.some(r => r.roleId === roleId)) {
-            filteredList.push(user);
-          }
-        }
-        
-        // 手动分页
-        const total = filteredList.length;
-        const start = (pageNum - 1) * pageSize;
-        const rows = filteredList.slice(start, start + pageSize);
-        
-        ctx.body = {
-          code: 200,
-          msg: '查询成功',
-          rows,
-          total
-        };
+        ctx.body = result;
       } catch (err) {
         ctx.logger.error('查询未分配用户列表失败:', err);
         ctx.body = {
@@ -525,18 +465,16 @@ module.exports = app => {
       try {
         const { roleId } = ctx.params;
         
+        // 构建成功响应
+        const result = { code: 200, msg: '操作成功' };
+        
         // 查询角色已分配的部门ID列表
-        const checkedKeys = await service.system.dept.selectDeptListByRoleId(parseInt(roleId));
+        result.checkedKeys = await service.system.dept.selectDeptListByRoleId(parseInt(roleId));
         
         // 查询所有部门树
-        const depts = await service.system.dept.selectDeptTreeList({});
+        result.depts = await service.system.dept.selectDeptTreeList({});
         
-        ctx.body = {
-          code: 200,
-          msg: '操作成功',
-          checkedKeys,
-          depts
-        };
+        ctx.body = result;
       } catch (err) {
         ctx.logger.error('查询角色部门树失败:', err);
         ctx.body = {
@@ -562,13 +500,33 @@ module.exports = app => {
         // 查询角色列表
         const list = await service.system.role.selectRoleList(params);
         
-        // TODO: 实现 Excel 导出功能
-        // 目前返回 JSON 数据
-        ctx.body = {
-          code: 200,
-          msg: '导出成功',
-          data: list
-        };
+        // 定义 Excel 列配置
+        const columns = [
+          { header: '角色编号', key: 'roleId', width: 12 },
+          { header: '角色名称', key: 'roleName', width: 20 },
+          { header: '权限字符', key: 'roleKey', width: 20 },
+          { header: '显示顺序', key: 'roleSort', width: 12 },
+          { header: '数据范围', key: 'dataScopeText', width: 15 },
+          { header: '角色状态', key: 'statusText', width: 10 },
+          { header: '创建时间', key: 'createTime', width: 20 },
+          { header: '备注', key: 'remark', width: 30 }
+        ];
+        
+        // 处理导出数据
+        const exportData = list.map(role => ({
+          ...role,
+          dataScopeText: ExcelUtil.convertDictValue(role.dataScope, {
+            '1': '全部数据权限',
+            '2': '自定数据权限',
+            '3': '本部门数据权限',
+            '4': '本部门及以下数据权限',
+            '5': '仅本人数据权限'
+          }),
+          statusText: ExcelUtil.convertDictValue(role.status, { '0': '正常', '1': '停用' })
+        }));
+        
+        // 导出 Excel
+        ExcelUtil.exportExcel(ctx, exportData, columns, '角色数据');
       } catch (err) {
         ctx.logger.error('导出角色失败:', err);
         ctx.body = {
