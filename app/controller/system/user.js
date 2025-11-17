@@ -35,13 +35,6 @@ module.exports = app => {
           msg: "查询成功",
           ...result,
         };
-        
-        ctx.body = {
-          code: 200,
-          msg: '查询成功',
-          rows,
-          total
-        };
       } catch (err) {
         ctx.logger.error('查询用户列表失败:', err);
         ctx.body = {

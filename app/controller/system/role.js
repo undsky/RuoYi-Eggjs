@@ -346,7 +346,11 @@ module.exports = (app) => {
         // 查询未分配用户角色列表
         const result = await service.system.user.selectUnallocatedList(params);
 
-        ctx.body = result;
+        ctx.body = {
+          code: 200,
+          msg: "查询成功",
+          ...result,
+        };
       } catch (err) {
         ctx.logger.error("查询未分配用户列表失败:", err);
         ctx.body = {

@@ -41,9 +41,9 @@ class UserService extends Service {
     };
 
     // 查询列表
-    const users = await ctx.helper.getDB(ctx).sysUserMapper.selectUserList(
-      [], conditions
-    );
+    const users = await ctx.helper
+      .getDB(ctx)
+      .sysUserMapper.selectUserList([], conditions);
 
     return users || [];
   }
@@ -69,12 +69,13 @@ class UserService extends Service {
   async selectUserByUserName(userName) {
     const { ctx } = this;
 
-    const user =
-      await ctx.helper.getDB(ctx).sysUserMapper.selectUserByUserName([], {
+    const user = await ctx.helper
+      .getDB(ctx)
+      .sysUserMapper.selectUserByUserName([], {
         userName,
       });
 
-      return user;
+    return user;
   }
 
   /**
@@ -112,8 +113,8 @@ class UserService extends Service {
     const { ctx } = this;
 
     return await ctx.helper.getDB(ctx).sysUserMapper.checkEmailUnique([], {
-        email: user.email,
-      });
+      email: user.email,
+    });
   }
 
   /**
@@ -155,10 +156,9 @@ class UserService extends Service {
     user.createBy = ctx.state.user.userName;
 
     // 插入用户
-    const result = await ctx.helper.getMasterDB(ctx).sysUserMapper.insertUser(
-      [],
-      user
-    );
+    const result = await ctx.helper
+      .getMasterDB(ctx)
+      .sysUserMapper.insertUser([], user);
 
     if (result) {
       const userId = result;
@@ -191,10 +191,9 @@ class UserService extends Service {
     user.updateBy = ctx.state.user.userName;
 
     // 删除用户与角色关�?
-    await ctx.helper.getMasterDB(ctx).sysUserRoleMapper.deleteUserRoleByUserId(
-      [],
-      { userId: user.userId }
-    );
+    await ctx.helper
+      .getMasterDB(ctx)
+      .sysUserRoleMapper.deleteUserRoleByUserId([], { userId: user.userId });
 
     // 插入用户与角色关�?
     if (user.roleIds && user.roleIds.length > 0) {
@@ -202,10 +201,9 @@ class UserService extends Service {
     }
 
     // 删除用户与岗位关�?
-    await ctx.helper.getMasterDB(ctx).sysUserPostMapper.deleteUserPostByUserId(
-      [],
-      { userId: user.userId }
-    );
+    await ctx.helper
+      .getMasterDB(ctx)
+      .sysUserPostMapper.deleteUserPostByUserId([], { userId: user.userId });
 
     // 插入用户与岗位关�?
     if (user.postIds && user.postIds.length > 0) {
@@ -213,10 +211,9 @@ class UserService extends Service {
     }
 
     // 更新用户
-    const result = await ctx.helper.getMasterDB(ctx).sysUserMapper.updateUser(
-      [],
-      user
-    );
+    const result = await ctx.helper
+      .getMasterDB(ctx)
+      .sysUserMapper.updateUser([], user);
 
     return result && result.length > 0 ? 1 : 0;
   }
@@ -229,8 +226,9 @@ class UserService extends Service {
   async updateUserStatus(user) {
     const { ctx } = this;
 
-    const result =
-      await ctx.helper.getMasterDB(ctx).sysUserMapper.updateUserStatus([], user);
+    const result = await ctx.helper
+      .getMasterDB(ctx)
+      .sysUserMapper.updateUserStatus([], user);
 
     return result && result.length > 0 ? 1 : 0;
   }
@@ -243,10 +241,9 @@ class UserService extends Service {
   async resetPwd(user) {
     const { ctx } = this;
 
-    const result = await ctx.helper.getMasterDB(ctx).sysUserMapper.resetUserPwd(
-      [],
-      user
-    );
+    const result = await ctx.helper
+      .getMasterDB(ctx)
+      .sysUserMapper.resetUserPwd([], user);
 
     return result && result.length > 0 ? 1 : 0;
   }
@@ -270,8 +267,9 @@ class UserService extends Service {
     });
 
     // 删除用户
-    const result =
-      await ctx.helper.getMasterDB(ctx).sysUserMapper.deleteUserByIds([], {
+    const result = await ctx.helper
+      .getMasterDB(ctx)
+      .sysUserMapper.deleteUserByIds([], {
         array: userIds,
       });
 
@@ -287,10 +285,9 @@ class UserService extends Service {
     const { ctx } = this;
 
     // 删除用户与角色关�?
-    await ctx.helper.getMasterDB(ctx).sysUserRoleMapper.deleteUserRoleByUserId(
-      [],
-      { userId }
-    );
+    await ctx.helper
+      .getMasterDB(ctx)
+      .sysUserRoleMapper.deleteUserRoleByUserId([], { userId });
 
     // 插入用户与角色关�?
     await this.insertUserRole(userId, roleIds);
@@ -313,10 +310,9 @@ class UserService extends Service {
       roleId,
     }));
 
-    await ctx.helper.getMasterDB(ctx).sysUserRoleMapper.batchUserRole(
-      [],
-      {list:userRoles}
-    );
+    await ctx.helper
+      .getMasterDB(ctx)
+      .sysUserRoleMapper.batchUserRole([], { list: userRoles });
   }
 
   /**
@@ -336,10 +332,9 @@ class UserService extends Service {
       postId,
     }));
 
-    await ctx.helper.getMasterDB(ctx).sysUserPostMapper.batchUserPost(
-      [],
-      {list:userPosts}
-    );
+    await ctx.helper
+      .getMasterDB(ctx)
+      .sysUserPostMapper.batchUserPost([], { list: userPosts });
   }
 
   /**
@@ -410,10 +405,9 @@ class UserService extends Service {
     user.updateBy = ctx.state.user.userName;
 
     // 更新用户
-    const result = await ctx.helper.getMasterDB(ctx).sysUserMapper.updateUser(
-      [],
-      user
-    );
+    const result = await ctx.helper
+      .getMasterDB(ctx)
+      .sysUserMapper.updateUser([], user);
 
     return result && result.length > 0 ? 1 : 0;
   }
@@ -432,10 +426,9 @@ class UserService extends Service {
       password,
     };
 
-    const result = await ctx.helper.getMasterDB(ctx).sysUserMapper.resetUserPwd(
-      [],
-      user
-    );
+    const result = await ctx.helper
+      .getMasterDB(ctx)
+      .sysUserMapper.resetUserPwd([], user);
 
     return result && result.length > 0 ? 1 : 0;
   }
@@ -454,8 +447,9 @@ class UserService extends Service {
       avatar,
     };
 
-    const result =
-      await ctx.helper.getMasterDB(ctx).sysUserMapper.updateUserAvatar([], user);
+    const result = await ctx.helper
+      .getMasterDB(ctx)
+      .sysUserMapper.updateUserAvatar([], user);
 
     return result && result.length > 0;
   }
@@ -468,11 +462,9 @@ class UserService extends Service {
   async selectUserRoleGroup(userName) {
     const { ctx } = this;
 
-    const roles =
-      await ctx.helper.getMasterDB(ctx).sysUserRoleMapper.selectUserRoleGroup(
-        [],
-        { userName }
-      );
+    const roles = await ctx.helper
+      .getMasterDB(ctx)
+      .sysUserRoleMapper.selectUserRoleGroup([], { userName });
 
     return roles.map((r) => r.roleName).join(",");
   }
@@ -485,43 +477,42 @@ class UserService extends Service {
   async selectUserPostGroup(userName) {
     const { ctx } = this;
 
-    const posts =
-      await ctx.helper.getMasterDB(ctx).sysUserPostMapper.selectUserPostGroup(
-        [],
-        { userName }
-      );
+    const posts = await ctx.helper
+      .getMasterDB(ctx)
+      .sysUserPostMapper.selectUserPostGroup([], { userName });
 
     return posts.map((p) => p.postName).join(",");
   }
 
   /**
-   * 查询已分配用户角色列�?
+   * 查询已分配用户角色列表
    * @param {object} params - 查询参数
    * @return {array} 用户列表
    */
   async selectAllocatedList(params) {
     const { ctx } = this;
-    
-    return await ctx.helper.getDB(ctx).sysUserMapper.selectAllocatedList(
-      ctx.helper.page(params),
-      params
-    );
+
+    return await ctx.helper
+      .getDB(ctx)
+      .sysUserMapper.selectAllocatedList(ctx.helper.page(params), params);
   }
 
   /**
-   * 查询未分配用户角色列�?
+   * 查询未分配用户角色列表
    * @param {object} params - 查询参数
    * @return {array} 用户列表
    */
   async selectUnallocatedList(params) {
     const { ctx } = this;
-    
-    return await ctx.helper.getDB(ctx).sysUserMapper.selectUnallocatedList(
-      ctx.helper.page(params),
-      params
+
+    const mapper = ctx.helper.getDB(ctx).sysUserMapper;
+
+    return await ctx.helper.pageQuery(
+      mapper.selectUnallocatedListMapper([], params),
+      params,
+      mapper.db()
     );
   }
 }
 
 module.exports = UserService;
-
