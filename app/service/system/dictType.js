@@ -1,4 +1,4 @@
-/*
+﻿/*
  * @Description: 字典类型服务层
  * @Author: AI Assistant
  * @Date: 2025-10-24
@@ -28,7 +28,7 @@ class DictTypeService extends Service {
     };
 
     // 查询列表
-    const dictTypes = await ctx.service.db.mysql.ruoyi.sysDictTypeMapper.selectDictTypeList([], conditions);
+    const dictTypes = await ctx.helper.getDB(ctx).sysDictTypeMapper.selectDictTypeList([], conditions);
     
     return dictTypes || [];
   }
@@ -40,7 +40,7 @@ class DictTypeService extends Service {
   async selectDictTypeAll() {
     const { ctx } = this;
     
-    const dictTypes = await ctx.service.db.mysql.ruoyi.sysDictTypeMapper.selectDictTypeAll();
+    const dictTypes = await ctx.helper.getDB(ctx).sysDictTypeMapper.selectDictTypeAll();
     
     return dictTypes || [];
   }
@@ -53,7 +53,7 @@ class DictTypeService extends Service {
   async selectDictTypeById(dictId) {
     const { ctx } = this;
     
-    const dictTypes = await ctx.service.db.mysql.ruoyi.sysDictTypeMapper.selectDictTypeById([], {dictId});
+    const dictTypes = await ctx.helper.getDB(ctx).sysDictTypeMapper.selectDictTypeById([], {dictId});
     
     return dictTypes && dictTypes.length > 0 ? dictTypes[0] : null;
   }
@@ -66,7 +66,7 @@ class DictTypeService extends Service {
   async selectDictTypeByType(dictType) {
     const { ctx } = this;
     
-    const dictTypes = await ctx.service.db.mysql.ruoyi.sysDictTypeMapper.selectDictTypeByType([], {dictType});
+    const dictTypes = await ctx.helper.getDB(ctx).sysDictTypeMapper.selectDictTypeByType([], {dictType});
     
     return dictTypes && dictTypes.length > 0 ? dictTypes[0] : null;
   }
@@ -80,7 +80,7 @@ class DictTypeService extends Service {
     const { ctx } = this;
     
     const dictId = dictType.dictId || -1;
-    const dictTypes = await ctx.service.db.mysql.ruoyi.sysDictTypeMapper.checkDictTypeUnique([], {dictType: dictType.dictType});
+    const dictTypes = await ctx.helper.getDB(ctx).sysDictTypeMapper.checkDictTypeUnique([], {dictType: dictType.dictType});
     
     if (dictTypes && dictTypes.length > 0 && dictTypes[0].dictId !== dictId) {
       return false;
@@ -101,7 +101,7 @@ class DictTypeService extends Service {
     dictType.createBy = ctx.state.user.userName;
     
     // 插入字典类型
-    const result = await ctx.service.db.mysql.ruoyi.sysDictTypeMapper.insertDictType([], dictType);
+    const result = await ctx.helper.getMasterDB(ctx).sysDictTypeMapper.insertDictType([], dictType);
     
     // 清空缓存
     if (result && result.length > 0) {
@@ -127,11 +127,11 @@ class DictTypeService extends Service {
     dictType.updateBy = ctx.state.user.userName;
     
     // 更新字典类型
-    const result = await ctx.service.db.mysql.ruoyi.sysDictTypeMapper.updateDictType([], dictType);
+    const result = await ctx.helper.getMasterDB(ctx).sysDictTypeMapper.updateDictType([], dictType);
     
     // 如果字典类型改变，需要更新字典数据表中的类型
     if (oldDict && oldDict.dictType !== dictType.dictType) {
-      await ctx.service.db.mysql.ruoyi.sysDictDataMapper.updateDictDataType([], {oldDictType: oldDict.dictType, newDictType: dictType.dictType});
+      await ctx.helper.getMasterDB(ctx).sysDictDataMapper.updateDictDataType([], {oldDictType: oldDict.dictType, newDictType: dictType.dictType});
     }
     
     // 清空缓存
@@ -162,14 +162,14 @@ class DictTypeService extends Service {
       }
       
       // 检查是否有字典数据
-      const count = await ctx.service.db.mysql.ruoyi.sysDictDataMapper.countDictDataByType([], {dictType: dictType.dictType});
+      const count = await ctx.helper.getDB(ctx).sysDictDataMapper.countDictDataByType([], {dictType: dictType.dictType});
       
       if (count && count.length > 0 && count[0].count > 0) {
         throw new Error(`${dictType.dictName}已分配,不能删除`);
       }
       
       // 删除字典类型
-      await ctx.service.db.mysql.ruoyi.sysDictTypeMapper.deleteDictTypeById([], {dictId});
+      await ctx.helper.getMasterDB(ctx).sysDictTypeMapper.deleteDictTypeById([], {dictId});
       deletedCount++;
     }
     
@@ -242,4 +242,5 @@ class DictTypeService extends Service {
 }
 
 module.exports = DictTypeService;
+
 

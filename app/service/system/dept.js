@@ -1,4 +1,4 @@
-/*
+﻿/*
  * @Description: 部门服务层
  * @Author: AI Assistant
  * @Date: 2025-10-24
@@ -28,7 +28,7 @@ class DeptService extends Service {
     };
 
     // 查询列表
-    const depts = await ctx.service.db.mysql.ruoyi.sysDeptMapper.selectDeptList([],conditions);
+    const depts = await ctx.helper.getDB(ctx).sysDeptMapper.selectDeptList([],conditions);
     
     return depts || [];
   }
@@ -155,7 +155,7 @@ class DeptService extends Service {
   async selectDeptById(deptId) {
     const { ctx } = this;
     
-    const depts = await ctx.service.db.mysql.ruoyi.sysDeptMapper.selectDeptById([], {deptId});
+    const depts = await ctx.helper.getDB(ctx).sysDeptMapper.selectDeptById([], {deptId});
     
     return depts && depts.length > 0 ? depts[0] : null;
   }
@@ -173,7 +173,7 @@ class DeptService extends Service {
     const deptCheckStrictly = role && role.deptCheckStrictly;
     
     // 使用 Mapper 方法查询
-    return await ctx.service.db.mysql.ruoyi.sysDeptMapper.selectDeptListByRoleId(
+    return await ctx.helper.getDB(ctx).sysDeptMapper.selectDeptListByRoleId(
       [],
       { roleId, deptCheckStrictly }
     );
@@ -193,7 +193,7 @@ class DeptService extends Service {
       parentId: dept.parentId
     };
     
-    const depts = await ctx.service.db.mysql.ruoyi.sysDeptMapper.checkDeptNameUnique([], conditions);
+    const depts = await ctx.helper.getDB(ctx).sysDeptMapper.checkDeptNameUnique([], conditions);
     
     if (depts && depts.length > 0 && depts[0].deptId !== deptId) {
       return false;
@@ -210,7 +210,7 @@ class DeptService extends Service {
   async hasChildByDeptId(deptId) {
     const { ctx } = this;
     
-    const result = await ctx.service.db.mysql.ruoyi.sysDeptMapper.hasChildByDeptId([], {deptId});
+    const result = await ctx.helper.getDB(ctx).sysDeptMapper.hasChildByDeptId([], {deptId});
     
     return result && result.length > 0 && result[0].count > 0;
   }
@@ -223,7 +223,7 @@ class DeptService extends Service {
   async checkDeptExistUser(deptId) {
     const { ctx } = this;
     
-    const result = await ctx.service.db.mysql.ruoyi.sysDeptMapper.checkDeptExistUser([], {deptId});
+    const result = await ctx.helper.getDB(ctx).sysDeptMapper.checkDeptExistUser([], {deptId});
     
     return result && result.length > 0 && result[0].count > 0;
   }
@@ -236,7 +236,7 @@ class DeptService extends Service {
   async selectNormalChildrenDeptById(deptId) {
     const { ctx } = this;
     
-    const result = await ctx.service.db.mysql.ruoyi.sysDeptMapper.selectNormalChildrenDeptById([], {deptId});
+    const result = await ctx.helper.getDB(ctx).sysDeptMapper.selectNormalChildrenDeptById([], {deptId});
     
     return result && result.length > 0 ? result[0].count : 0;
   }
@@ -291,7 +291,7 @@ class DeptService extends Service {
     dept.createBy = ctx.state.user.userName;
     
     // 插入部门
-    const result = await ctx.service.db.mysql.ruoyi.sysDeptMapper.insertDept([], dept);
+    const result = await ctx.helper.getMasterDB(ctx).sysDeptMapper.insertDept([], dept);
     
     return result && result.length > 0 ? 1 : 0;
   }
@@ -325,7 +325,7 @@ class DeptService extends Service {
     dept.updateBy = ctx.state.user.userName;
     
     // 更新部门
-    const result = await ctx.service.db.mysql.ruoyi.sysDeptMapper.updateDept([], dept);
+    const result = await ctx.helper.getMasterDB(ctx).sysDeptMapper.updateDept([], dept);
     
     // 如果该部门是启用状态，则启用该部门的所有上级部门
     if (dept.status === '0' && dept.ancestors && dept.ancestors !== '0') {
@@ -361,7 +361,7 @@ class DeptService extends Service {
     }
     
     // 批量更新
-    await ctx.service.db.mysql.ruoyi.sysDeptMapper.updateDeptChildren([], children);
+    await ctx.helper.getMasterDB(ctx).sysDeptMapper.updateDeptChildren([], children);
   }
 
   /**
@@ -379,7 +379,7 @@ class DeptService extends Service {
     }
     
     // 批量更新状态
-    await ctx.service.db.mysql.ruoyi.sysDeptMapper.updateDeptStatusNormal([], {ancestorIds});
+    await ctx.helper.getMasterDB(ctx).sysDeptMapper.updateDeptStatusNormal([], {ancestorIds});
   }
 
   /**
@@ -391,11 +391,12 @@ class DeptService extends Service {
     const { ctx } = this;
     
     // 删除部门（软删除）
-    const result = await ctx.service.db.mysql.ruoyi.sysDeptMapper.deleteDeptById([], {deptId});
+    const result = await ctx.helper.getMasterDB(ctx).sysDeptMapper.deleteDeptById([], {deptId});
     
     return result && result.length > 0 ? 1 : 0;
   }
 }
 
 module.exports = DeptService;
+
 

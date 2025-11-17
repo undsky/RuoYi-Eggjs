@@ -1,4 +1,4 @@
-/*
+﻿/*
  * @Description: 缓存监控服务层
  * @Author: AI Assistant
  * @Date: 2025-10-24
@@ -133,4 +133,5 @@ class CacheService extends Service {
 }
 
 module.exports = CacheService;
+
 

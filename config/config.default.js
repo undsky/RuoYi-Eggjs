@@ -24,7 +24,7 @@ module.exports = (appInfo) => {
   config.keys = appInfo.name + "o%Fp(=-GLFN;7";
 
   // add your middleware config here
-  config.middleware = [ "formatBody"];
+  config.middleware = ["formatBody"];
 
   config.cors = {
     allowMethods: "GET,POST,PUT,DELETE,PATCH",
@@ -124,16 +124,29 @@ module.exports = (appInfo) => {
 
   // 验证码配置
   config.captcha = {
-    enabled: true,  // 是否启用验证码
-    type: 'math',   // 验证码类型：char-字符 math-数学
-    category: 'text'  // 图片类型：svg-SVG格式 text-纯文本
+    enabled: true, // 是否启用验证码
+    type: "math", // 验证码类型：char-字符 math-数学
+    category: "text", // 图片类型：svg-SVG格式 text-纯文本
   };
 
   // 安全配置
   config.security = {
     csrf: {
-      enable: false,  // 关闭 CSRF（使用 JWT）
-    }
+      enable: false, // 关闭 CSRF（使用 JWT）
+    },
+  };
+
+  // 数据库映射配置
+  config.database = {
+    master: {
+      driver: "mysql", // 数据库驱动：mysql, pgsql, sqlite
+      instance: "ruoyi", // 主库实例名称（写操作）
+    },
+    slave: {
+      driver: "mysql", // 数据库驱动：mysql, pgsql, sqlite
+      instance: "ruoyi", // 从库实例名称（读操作），默认同主库
+    },
+    readWriteSplit: false, // 是否启用读写分离
   };
 
   return config;

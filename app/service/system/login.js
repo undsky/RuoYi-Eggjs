@@ -1,4 +1,4 @@
-/*
+﻿/*
  * @Description: 登录认证服务层
  * @Author: AI Assistant
  * @Date: 2025-10-23
@@ -21,7 +21,7 @@ class LoginService extends Service {
 
     // 1. 查询用户
     const users =
-      await ctx.service.db.mysql.ruoyi.sysUserMapper.selectUserByUserName(
+      await ctx.helper.getDB(ctx).sysUserMapper.selectUserByUserName(
         null,
         { userName }
       );
@@ -50,7 +50,7 @@ class LoginService extends Service {
     }
 
     // 4. 更新登录信息
-    await ctx.service.db.mysql.ruoyi.sysUserMapper.updateLoginInfo([], {
+    await ctx.helper.getMasterDB(ctx).sysUserMapper.updateLoginInfo([], {
       userId: user.userId,
       loginIp: ctx.request.ip,
       loginDate: dayjs().format('YYYY-MM-DD HH:mm:ss'),
@@ -79,7 +79,7 @@ class LoginService extends Service {
     );
 
     // 插入用户
-    await ctx.service.db.mysql.ruoyi.sysUserMapper.insertUser([], {
+    await ctx.helper.getMasterDB(ctx).sysUserMapper.insertUser([], {
       userName,
       nickName: userName,
       password: hashedPassword,
@@ -186,3 +186,4 @@ class LoginService extends Service {
 }
 
 module.exports = LoginService;
+

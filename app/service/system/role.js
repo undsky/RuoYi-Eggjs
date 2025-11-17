@@ -14,7 +14,7 @@ class RoleService extends Service {
   async selectRoleAll() {
     const { ctx } = this;
 
-    return await ctx.service.db.mysql.ruoyi.sysRoleMapper.selectRoleAll();
+    return await ctx.helper.getDB(ctx).sysRoleMapper.selectRoleAll();
   }
 
   /**
@@ -27,7 +27,7 @@ class RoleService extends Service {
 
     // 查询用户拥有的角色权限
     const userRoles =
-      await ctx.service.db.mysql.ruoyi.sysRoleMapper.selectRolePermissionByUserId(
+      await ctx.helper.getDB(ctx).sysRoleMapper.selectRolePermissionByUserId(
         [],
         { userId }
       );
@@ -46,6 +46,17 @@ class RoleService extends Service {
     }
 
     return roles;
+  }
+
+  async selectRolePage(role = {}) {
+    const { ctx } = this;
+    const mapper = ctx.helper.getDB(ctx).sysRoleMapper;
+
+    return await ctx.helper.pageQuery(
+      mapper.selectRoleListMapper([], role),
+      role,
+      mapper.db()
+    );
   }
 
   /**
@@ -70,7 +81,7 @@ class RoleService extends Service {
     };
 
     // 查询列表
-    const roles = await ctx.service.db.mysql.ruoyi.sysRoleMapper.selectRoleList(
+    const roles = await ctx.helper.getDB(ctx).sysRoleMapper.selectRoleList(
       [],
       conditions
     );
@@ -86,7 +97,7 @@ class RoleService extends Service {
   async selectRoleById(roleId) {
     const { ctx } = this;
 
-    return await ctx.service.db.mysql.ruoyi.sysRoleMapper.selectRoleById([], {
+    return await ctx.helper.getDB(ctx).sysRoleMapper.selectRoleById([], {
       roleId,
     });
   }
@@ -101,7 +112,7 @@ class RoleService extends Service {
 
     const roleId = role.roleId || -1;
     const roles =
-      await ctx.service.db.mysql.ruoyi.sysRoleMapper.checkRoleNameUnique([], {
+      await ctx.helper.getDB(ctx).sysRoleMapper.checkRoleNameUnique([], {
         roleName: role.roleName,
         roleId,
       });
@@ -123,7 +134,7 @@ class RoleService extends Service {
 
     const roleId = role.roleId || -1;
     const roles =
-      await ctx.service.db.mysql.ruoyi.sysRoleMapper.checkRoleKeyUnique([], {
+      await ctx.helper.getDB(ctx).sysRoleMapper.checkRoleKeyUnique([], {
         roleKey: role.roleKey,
         roleId,
       });
@@ -180,7 +191,7 @@ class RoleService extends Service {
     role.deptCheckStrictly = role.deptCheckStrictly === true ? 1 : 0;
 
     // 插入角色
-    const result = await ctx.service.db.mysql.ruoyi.sysRoleMapper.insertRole(
+    const result = await ctx.helper.getMasterDB(ctx).sysRoleMapper.insertRole(
       [],
       role
     );
@@ -211,13 +222,13 @@ class RoleService extends Service {
     role.updateBy = ctx.state.user.userName;
 
     // 更新角色
-    const result = await ctx.service.db.mysql.ruoyi.sysRoleMapper.updateRole(
+    const result = await ctx.helper.getMasterDB(ctx).sysRoleMapper.updateRole(
       [],
       role
     );
 
     // 删除角色与菜单关联
-    await ctx.service.db.mysql.ruoyi.sysRoleMenuMapper.deleteRoleMenuByRoleId(
+    await ctx.helper.getMasterDB(ctx).sysRoleMenuMapper.deleteRoleMenuByRoleId(
       [],
       { roleId: role.roleId }
     );
@@ -238,7 +249,7 @@ class RoleService extends Service {
   async updateRoleStatus(role) {
     const { ctx } = this;
 
-    const result = await ctx.service.db.mysql.ruoyi.sysRoleMapper.updateRole(
+    const result = await ctx.helper.getMasterDB(ctx).sysRoleMapper.updateRole(
       [],
       role
     );
@@ -255,13 +266,13 @@ class RoleService extends Service {
     const { ctx } = this;
 
     // 更新角色
-    const result = await ctx.service.db.mysql.ruoyi.sysRoleMapper.updateRole(
+    const result = await ctx.helper.getMasterDB(ctx).sysRoleMapper.updateRole(
       [],
       role
     );
 
     // 删除角色与部门关联
-    await ctx.service.db.mysql.ruoyi.sysRoleDeptMapper.deleteRoleDeptByRoleId(
+    await ctx.helper.getMasterDB(ctx).sysRoleDeptMapper.deleteRoleDeptByRoleId(
       [],
       { roleId: role.roleId }
     );
@@ -283,18 +294,18 @@ class RoleService extends Service {
     const { ctx } = this;
 
     // 删除角色与菜单关联
-    await ctx.service.db.mysql.ruoyi.sysRoleMenuMapper.deleteRoleMenu([], {
+    await ctx.helper.getMasterDB(ctx).sysRoleMenuMapper.deleteRoleMenu([], {
       array: roleIds,
     });
 
     // 删除角色与部门关联
-    await ctx.service.db.mysql.ruoyi.sysRoleDeptMapper.deleteRoleDept([], {
+    await ctx.helper.getMasterDB(ctx).sysRoleDeptMapper.deleteRoleDept([], {
       array: roleIds,
     });
 
     // 删除角色（软删除）
     const result =
-      await ctx.service.db.mysql.ruoyi.sysRoleMapper.deleteRoleByIds([], {
+      await ctx.helper.getMasterDB(ctx).sysRoleMapper.deleteRoleByIds([], {
         array: roleIds,
       });
 
@@ -309,7 +320,7 @@ class RoleService extends Service {
   async deleteAuthUser(userRole) {
     const { ctx } = this;
 
-    return ctx.service.db.mysql.ruoyi.sysUserRoleMapper.deleteUserRoleInfo(
+    return ctx.helper.getMasterDB(ctx).sysUserRoleMapper.deleteUserRoleInfo(
       [],
       userRole
     );
@@ -324,7 +335,7 @@ class RoleService extends Service {
   async deleteAuthUsers(roleId, userIds) {
     const { ctx } = this;
 
-    return ctx.service.db.mysql.ruoyi.sysUserRoleMapper.deleteUserRoleInfos(
+    return ctx.helper.getMasterDB(ctx).sysUserRoleMapper.deleteUserRoleInfos(
       [],
       {
         roleId,
@@ -351,7 +362,7 @@ class RoleService extends Service {
       roleId,
     }));
 
-    await ctx.service.db.mysql.ruoyi.sysUserRoleMapper.batchUserRole(
+    await ctx.helper.getMasterDB(ctx).sysUserRoleMapper.batchUserRole(
       [],
       userRoles
     );
@@ -376,7 +387,7 @@ class RoleService extends Service {
       menuId,
     }));
 
-    await ctx.service.db.mysql.ruoyi.sysRoleMenuMapper.batchRoleMenu([], {
+    await ctx.helper.getMasterDB(ctx).sysRoleMenuMapper.batchRoleMenu([], {
       list: roleMenus,
     });
   }
@@ -398,7 +409,7 @@ class RoleService extends Service {
       deptId,
     }));
 
-    await ctx.service.db.mysql.ruoyi.sysRoleDeptMapper.batchRoleDept([], {
+    await ctx.helper.getMasterDB(ctx).sysRoleDeptMapper.batchRoleDept([], {
       list: roleDepts,
     });
   }

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * @Description: 代码生成服务层
  * @Author: 姜彦汐
  * @Date: 2025-11-08
@@ -23,7 +23,7 @@ class GenService extends Service {
     const { ctx } = this;
     
     try {
-      const result = await ctx.service.db.mysql.ruoyi.genTableMapper.selectGenTableList(
+      const result = await ctx.helper.getDB(ctx).genTableMapper.selectGenTableList(
         {},
         genTable
       );
@@ -44,7 +44,7 @@ class GenService extends Service {
     const { ctx } = this;
     
     try {
-      const result = await ctx.service.db.mysql.ruoyi.genTableMapper.selectDbTableList(
+      const result = await ctx.helper.getDB(ctx).genTableMapper.selectDbTableList(
         {},
         genTable
       );
@@ -65,7 +65,7 @@ class GenService extends Service {
     const { ctx } = this;
     
     try {
-      const result = await ctx.service.db.mysql.ruoyi.genTableMapper.selectDbTableListByNames([tableNames]);
+      const result = await ctx.helper.getDB(ctx).genTableMapper.selectDbTableListByNames([tableNames]);
       
       return result || [];
     } catch (err) {
@@ -82,7 +82,7 @@ class GenService extends Service {
     const { ctx } = this;
     
     try {
-      const result = await ctx.service.db.mysql.ruoyi.genTableMapper.selectGenTableAll([]);
+      const result = await ctx.helper.getDB(ctx).genTableMapper.selectGenTableAll([]);
       
       return result || [];
     } catch (err) {
@@ -100,7 +100,7 @@ class GenService extends Service {
     const { ctx } = this;
     
     try {
-      const result = await ctx.service.db.mysql.ruoyi.genTableMapper.selectGenTableById([tableId]);
+      const result = await ctx.helper.getDB(ctx).genTableMapper.selectGenTableById([tableId]);
       
       if (result && result.length > 0) {
         const genTable = result[0];
@@ -126,7 +126,7 @@ class GenService extends Service {
     const { ctx } = this;
     
     try {
-      const result = await ctx.service.db.mysql.ruoyi.genTableMapper.selectGenTableByName([tableName]);
+      const result = await ctx.helper.getDB(ctx).genTableMapper.selectGenTableByName([tableName]);
       
       if (result && result.length > 0) {
         const genTable = result[0];
@@ -152,7 +152,7 @@ class GenService extends Service {
     const { ctx } = this;
     
     try {
-      const result = await ctx.service.db.mysql.ruoyi.genTableColumnMapper.selectGenTableColumnListByTableId([tableId]);
+      const result = await ctx.helper.getDB(ctx).genTableColumnMapper.selectGenTableColumnListByTableId([tableId]);
       
       return result || [];
     } catch (err) {
@@ -170,7 +170,7 @@ class GenService extends Service {
     const { ctx } = this;
     
     try {
-      const result = await ctx.service.db.mysql.ruoyi.genTableColumnMapper.selectDbTableColumnsByName([tableName]);
+      const result = await ctx.helper.getDB(ctx).genTableColumnMapper.selectDbTableColumnsByName([tableName]);
       
       return result || [];
     } catch (err) {
@@ -201,7 +201,7 @@ class GenService extends Service {
         GenUtils.initTable(table, operName);
         
         // 保存表信息
-        const result = await ctx.service.db.mysql.ruoyi.genTableMapper.insertGenTable([table]);
+        const result = await ctx.helper.getMasterDB(ctx).genTableMapper.insertGenTable([table]);
         
         if (result && result.affectedRows > 0) {
           // 获取插入的表ID
@@ -212,7 +212,7 @@ class GenService extends Service {
           for (const column of genTableColumns) {
             GenUtils.initColumnField(column, table);
             column.tableId = tableId;
-            await ctx.service.db.mysql.ruoyi.genTableColumnMapper.insertGenTableColumn([column]);
+            await ctx.helper.getMasterDB(ctx).genTableColumnMapper.insertGenTableColumn([column]);
           }
           
           count++;
@@ -240,13 +240,13 @@ class GenService extends Service {
       genTable.options = options;
       
       // 更新表信息
-      const result = await ctx.service.db.mysql.ruoyi.genTableMapper.updateGenTable([genTable]);
+      const result = await ctx.helper.getMasterDB(ctx).genTableMapper.updateGenTable([genTable]);
       
       if (result && result.affectedRows > 0) {
         // 更新列信息
         if (genTable.columns && genTable.columns.length > 0) {
           for (const column of genTable.columns) {
-            await ctx.service.db.mysql.ruoyi.genTableColumnMapper.updateGenTableColumn([column]);
+            await ctx.helper.getMasterDB(ctx).genTableColumnMapper.updateGenTableColumn([column]);
           }
         }
       }
@@ -268,10 +268,10 @@ class GenService extends Service {
     
     try {
       // 删除列信息
-      await ctx.service.db.mysql.ruoyi.genTableColumnMapper.deleteGenTableColumnByIds([tableIds]);
+      await ctx.helper.getMasterDB(ctx).genTableColumnMapper.deleteGenTableColumnByIds([tableIds]);
       
       // 删除表信息
-      const result = await ctx.service.db.mysql.ruoyi.genTableMapper.deleteGenTableByIds([tableIds]);
+      const result = await ctx.helper.getMasterDB(ctx).genTableMapper.deleteGenTableByIds([tableIds]);
       
       return result ? result.affectedRows : 0;
     } catch (err) {
@@ -478,18 +478,18 @@ class GenService extends Service {
             column.htmlType = prevColumn.htmlType;
           }
           
-          await ctx.service.db.mysql.ruoyi.genTableColumnMapper.updateGenTableColumn([column]);
+          await ctx.helper.getMasterDB(ctx).genTableColumnMapper.updateGenTableColumn([column]);
         } else {
           // 新增列
           column.tableId = table.tableId;
-          await ctx.service.db.mysql.ruoyi.genTableColumnMapper.insertGenTableColumn([column]);
+          await ctx.helper.getMasterDB(ctx).genTableColumnMapper.insertGenTableColumn([column]);
         }
       }
       
       // 删除不存在的列
       const delColumns = tableColumns.filter(col => !dbTableColumnNames.includes(col.columnName));
       if (delColumns.length > 0) {
-        await ctx.service.db.mysql.ruoyi.genTableColumnMapper.deleteGenTableColumns([delColumns]);
+        await ctx.helper.getMasterDB(ctx).genTableColumnMapper.deleteGenTableColumns([delColumns]);
       }
       
       return 1;
@@ -674,3 +674,4 @@ class GenService extends Service {
 }
 
 module.exports = GenService;
+

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * @Description: 通知公告服务层
  * @Author: AI Assistant
  * @Date: 2025-10-24
@@ -24,7 +24,7 @@ class NoticeService extends Service {
     };
 
     // 查询列表
-    const notices = await ctx.service.db.mysql.ruoyi.sysNoticeMapper.selectNoticeList([], conditions);
+    const notices = await ctx.helper.getDB(ctx).sysNoticeMapper.selectNoticeList([], conditions);
     
     return notices || [];
   }
@@ -37,7 +37,7 @@ class NoticeService extends Service {
   async selectNoticeById(noticeId) {
     const { ctx } = this;
     
-    const notices = await ctx.service.db.mysql.ruoyi.sysNoticeMapper.selectNoticeById([], {noticeId});
+    const notices = await ctx.helper.getDB(ctx).sysNoticeMapper.selectNoticeById([], {noticeId});
     
     return notices && notices.length > 0 ? notices[0] : null;
   }
@@ -54,7 +54,7 @@ class NoticeService extends Service {
     notice.createBy = ctx.state.user.userName;
     
     // 插入通知公告
-    const result = await ctx.service.db.mysql.ruoyi.sysNoticeMapper.insertNotice([], notice);
+    const result = await ctx.helper.getMasterDB(ctx).sysNoticeMapper.insertNotice([], notice);
     
     return result && result.length > 0 ? 1 : 0;
   }
@@ -71,7 +71,7 @@ class NoticeService extends Service {
     notice.updateBy = ctx.state.user.userName;
     
     // 更新通知公告
-    const result = await ctx.service.db.mysql.ruoyi.sysNoticeMapper.updateNotice([], notice);
+    const result = await ctx.helper.getMasterDB(ctx).sysNoticeMapper.updateNotice([], notice);
     
     return result && result.length > 0 ? 1 : 0;
   }
@@ -85,11 +85,12 @@ class NoticeService extends Service {
     const { ctx } = this;
     
     // 删除通知公告
-    const result = await ctx.service.db.mysql.ruoyi.sysNoticeMapper.deleteNoticeByIds([], {noticeIds});
+    const result = await ctx.helper.getMasterDB(ctx).sysNoticeMapper.deleteNoticeByIds([], {noticeIds});
     
     return result && result.length > 0 ? noticeIds.length : 0;
   }
 }
 
 module.exports = NoticeService;
+
 

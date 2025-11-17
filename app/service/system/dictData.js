@@ -1,4 +1,4 @@
-/*
+﻿/*
  * @Description: 字典数据服务层
  * @Author: AI Assistant
  * @Date: 2025-10-24
@@ -24,7 +24,7 @@ class DictDataService extends Service {
     };
 
     // 查询列表
-    const dictDataList = await ctx.service.db.mysql.ruoyi.sysDictDataMapper.selectDictDataList([], conditions);
+    const dictDataList = await ctx.helper.getDB(ctx).sysDictDataMapper.selectDictDataList([], conditions);
     
     return dictDataList || [];
   }
@@ -37,7 +37,7 @@ class DictDataService extends Service {
   async selectDictDataById(dictCode) {
     const { ctx } = this;
     
-    const dictDataList = await ctx.service.db.mysql.ruoyi.sysDictDataMapper.selectDictDataById([], {dictCode});
+    const dictDataList = await ctx.helper.getDB(ctx).sysDictDataMapper.selectDictDataById([], {dictCode});
     
     return dictDataList && dictDataList.length > 0 ? dictDataList[0] : null;
   }
@@ -63,7 +63,7 @@ class DictDataService extends Service {
     }
     
     // 从数据库查询
-    const dictDataList = await ctx.service.db.mysql.ruoyi.sysDictDataMapper.selectDictDataByType([],{dictType});
+    const dictDataList = await ctx.helper.getDB(ctx).sysDictDataMapper.selectDictDataByType([],{dictType});
     
     // 存入缓存
     if (dictDataList && dictDataList.length > 0) {
@@ -85,7 +85,7 @@ class DictDataService extends Service {
     dictData.createBy = ctx.state.user.userName;
     
     // 插入字典数据
-    const result = await ctx.service.db.mysql.ruoyi.sysDictDataMapper.insertDictData([], dictData);
+    const result = await ctx.helper.getMasterDB(ctx).sysDictDataMapper.insertDictData([], dictData);
     
     // 更新缓存
     if (result && result.length > 0) {
@@ -108,7 +108,7 @@ class DictDataService extends Service {
     dictData.updateBy = ctx.state.user.userName;
     
     // 更新字典数据
-    const result = await ctx.service.db.mysql.ruoyi.sysDictDataMapper.updateDictData([], dictData);
+    const result = await ctx.helper.getMasterDB(ctx).sysDictDataMapper.updateDictData([], dictData);
     
     // 更新缓存
     if (result && result.length > 0) {
@@ -139,7 +139,7 @@ class DictDataService extends Service {
       }
       
       // 删除字典数据
-      await ctx.service.db.mysql.ruoyi.sysDictDataMapper.deleteDictDataById([], {dictCode});
+      await ctx.helper.getMasterDB(ctx).sysDictDataMapper.deleteDictDataById([], {dictCode});
       
       // 记录需要更新缓存的字典类型
       dictTypes.add(dictData.dictType);
@@ -162,7 +162,7 @@ class DictDataService extends Service {
     const { ctx, app } = this;
     
     // 重新查询该类型的所有字典数据
-    const dictDataList = await ctx.service.db.mysql.ruoyi.sysDictDataMapper.selectDictDataByType([], {dictType});
+    const dictDataList = await ctx.helper.getDB(ctx).sysDictDataMapper.selectDictDataByType([], {dictType});
     
     // 更新缓存
     const cacheKey = `dict_${dictType}`;
@@ -171,4 +171,5 @@ class DictDataService extends Service {
 }
 
 module.exports = DictDataService;
+
 

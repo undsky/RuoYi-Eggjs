@@ -1,4 +1,4 @@
-/*
+﻿/*
  * @Description: 操作日志服务层
  * @Author: AI Assistant
  * @Date: 2025-10-24
@@ -32,7 +32,7 @@ class OperlogService extends Service {
     };
 
     // 查询列表
-    const operLogList = await ctx.service.db.mysql.ruoyi.sysOperLogMapper.selectOperLogList([], conditions);
+    const operLogList = await ctx.helper.getDB(ctx).sysOperLogMapper.selectOperLogList([], conditions);
     
     return operLogList || [];
   }
@@ -45,7 +45,7 @@ class OperlogService extends Service {
   async selectOperLogById(operId) {
     const { ctx } = this;
     
-    const operLogList = await ctx.service.db.mysql.ruoyi.sysOperLogMapper.selectOperLogById([], {operId});
+    const operLogList = await ctx.helper.getDB(ctx).sysOperLogMapper.selectOperLogById([], {operId});
     
     return operLogList && operLogList.length > 0 ? operLogList[0] : null;
   }
@@ -59,7 +59,7 @@ class OperlogService extends Service {
     const { ctx } = this;
     
     // 删除操作日志
-    const result = await ctx.service.db.mysql.ruoyi.sysOperLogMapper.deleteOperLogByIds([], {operIds});
+    const result = await ctx.helper.getMasterDB(ctx).sysOperLogMapper.deleteOperLogByIds([], {operIds});
     
     return result && result.length > 0 ? operIds.length : 0;
   }
@@ -71,7 +71,7 @@ class OperlogService extends Service {
     const { ctx } = this;
     
     // 清空操作日志
-    await ctx.service.db.mysql.ruoyi.sysOperLogMapper.cleanOperLog();
+    await ctx.helper.getDB(ctx).sysOperLogMapper.cleanOperLog();
   }
 
   /**
@@ -102,7 +102,7 @@ class OperlogService extends Service {
       };
       
       // 异步写入数据库
-      await ctx.service.db.mysql.ruoyi.sysOperLogMapper.insertOperlog([], log);
+      await ctx.helper.getMasterDB(ctx).sysOperLogMapper.insertOperlog([], log);
     } catch (err) {
       ctx.logger.error('记录操作日志失败:', err);
     }
@@ -110,4 +110,5 @@ class OperlogService extends Service {
 }
 
 module.exports = OperlogService;
+
 

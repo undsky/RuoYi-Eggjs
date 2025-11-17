@@ -1,4 +1,4 @@
-/**
+﻿/**
  * 定时任务服务层
  * @Author: 姜彦汐
  * @Date: 2025-11-08
@@ -20,7 +20,7 @@ class JobService extends Service {
     const { ctx } = this;
     
     try {
-      const mapper = ctx.service.db.mysql.ruoyi.sysJobMapper;
+      const mapper = ctx.helper.getDB(ctx).sysJobMapper;
       
       // 构造分页参数
       const values = ctx.helper.page({ pageNum: page.pageNum, pageSize: page.pageSize });
@@ -56,7 +56,7 @@ class JobService extends Service {
     const { ctx } = this;
     
     try {
-      const mapper = ctx.service.db.mysql.ruoyi.sysJobMapper;
+      const mapper = ctx.helper.getDB(ctx).sysJobMapper;
       const result = await mapper.countJobList([], job);
       
       return result && result[0] ? result[0].count : 0;
@@ -75,7 +75,7 @@ class JobService extends Service {
     const { ctx } = this;
     
     try {
-      const mapper = ctx.service.db.mysql.ruoyi.sysJobMapper;
+      const mapper = ctx.helper.getDB(ctx).sysJobMapper;
       const result = await mapper.selectJobById([jobId]);
       
       if (result && result[0]) {
@@ -104,7 +104,7 @@ class JobService extends Service {
     const { ctx } = this;
     
     try {
-      const mapper = ctx.service.db.mysql.ruoyi.sysJobMapper;
+      const mapper = ctx.helper.getDB(ctx).sysJobMapper;
       const result = await mapper.selectJobAll([]);
       
       return result || [];
@@ -123,7 +123,7 @@ class JobService extends Service {
     const { ctx } = this;
     
     try {
-      const mapper = ctx.service.db.mysql.ruoyi.sysJobMapper;
+      const mapper = ctx.helper.getDB(ctx).sysJobMapper;
       
       // 设置创建信息
       job.createBy = ctx.state.user ? ctx.state.user.userName : 'system';
@@ -160,7 +160,7 @@ class JobService extends Service {
     const { ctx } = this;
     
     try {
-      const mapper = ctx.service.db.mysql.ruoyi.sysJobMapper;
+      const mapper = ctx.helper.getDB(ctx).sysJobMapper;
       
       // 获取原任务信息
       const oldJob = await this.selectJobById(job.jobId);
@@ -197,7 +197,7 @@ class JobService extends Service {
     const { ctx } = this;
     
     try {
-      const mapper = ctx.service.db.mysql.ruoyi.sysJobMapper;
+      const mapper = ctx.helper.getDB(ctx).sysJobMapper;
       
       // 先获取所有任务信息，用于删除调度
       const jobs = [];
@@ -232,7 +232,7 @@ class JobService extends Service {
     const { ctx } = this;
     
     try {
-      const mapper = ctx.service.db.mysql.ruoyi.sysJobMapper;
+      const mapper = ctx.helper.getDB(ctx).sysJobMapper;
       
       // 获取完整的任务信息
       const fullJob = await this.selectJobById(job.jobId);
@@ -477,3 +477,4 @@ class JobService extends Service {
 }
 
 module.exports = JobService;
+

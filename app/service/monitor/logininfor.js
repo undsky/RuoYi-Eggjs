@@ -1,4 +1,4 @@
-/*
+﻿/*
  * @Description: 登录日志服务层
  * @Author: AI Assistant
  * @Date: 2025-10-23
@@ -29,7 +29,7 @@ class LogininforService extends Service {
     };
 
     // 查询列表
-    const logininforList = await ctx.service.db.mysql.ruoyi.sysLogininforMapper.selectLogininforList([], conditions);
+    const logininforList = await ctx.helper.getDB(ctx).sysLogininforMapper.selectLogininforList([], conditions);
     
     return logininforList || [];
   }
@@ -43,7 +43,7 @@ class LogininforService extends Service {
     const { ctx } = this;
     
     // 删除登录日志
-    const result = await ctx.service.db.mysql.ruoyi.sysLogininforMapper.deleteLogininforByIds([], {infoIds});
+    const result = await ctx.helper.getMasterDB(ctx).sysLogininforMapper.deleteLogininforByIds([], {infoIds});
     
     return result && result.length > 0 ? infoIds.length : 0;
   }
@@ -55,7 +55,7 @@ class LogininforService extends Service {
     const { ctx } = this;
     
     // 清空登录日志
-    await ctx.service.db.mysql.ruoyi.sysLogininforMapper.cleanLogininfor();
+    await ctx.helper.getDB(ctx).sysLogininforMapper.cleanLogininfor();
   }
 
   /**
@@ -93,7 +93,7 @@ class LogininforService extends Service {
       };
       
       // 异步写入数据库
-      await ctx.service.db.mysql.ruoyi.sysLogininforMapper.insertLogininfor([], logininfor);
+      await ctx.helper.getMasterDB(ctx).sysLogininforMapper.insertLogininfor([], logininfor);
     } catch (err) {
       ctx.logger.error('记录登录日志失败:', err);
     }
@@ -135,4 +135,5 @@ class LogininforService extends Service {
 }
 
 module.exports = LogininforService;
+
 

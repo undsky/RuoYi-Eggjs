@@ -1,4 +1,4 @@
-/*
+﻿/*
  * @Description: 参数配置服务层
  * @Author: AI Assistant
  * @Date: 2025-10-23
@@ -28,7 +28,7 @@ class ConfigService extends Service {
     };
 
     // 查询列表
-    const configs = await ctx.service.db.mysql.ruoyi.sysConfigMapper.selectConfigList([], conditions);
+    const configs = await ctx.helper.getDB(ctx).sysConfigMapper.selectConfigList([], conditions);
     
     return configs || [];
   }
@@ -41,7 +41,7 @@ class ConfigService extends Service {
   async selectConfigById(configId) {
     const { ctx } = this;
     
-    const configs = await ctx.service.db.mysql.ruoyi.sysConfigMapper.selectConfigById([], {configId});
+    const configs = await ctx.helper.getDB(ctx).sysConfigMapper.selectConfigById([], {configId});
     
     return configs && configs.length > 0 ? configs[0] : null;
   }
@@ -67,7 +67,7 @@ class ConfigService extends Service {
       configKey
     };
     
-    const configs = await ctx.service.db.mysql.ruoyi.sysConfigMapper.selectConfig([], conditions);
+    const configs = await ctx.helper.getDB(ctx).sysConfigMapper.selectConfig([], conditions);
     
     if (configs) {
       configValue = configs.configValue;
@@ -90,7 +90,7 @@ class ConfigService extends Service {
     const { ctx } = this;
     
     const configId = config.configId || -1;
-    const configs = await ctx.service.db.mysql.ruoyi.sysConfigMapper.checkConfigKeyUnique([], {configKey: config.configKey});
+    const configs = await ctx.helper.getDB(ctx).sysConfigMapper.checkConfigKeyUnique([], {configKey: config.configKey});
     
     if (configs && configs.length > 0 && configs[0].configId !== configId) {
       return false;
@@ -111,7 +111,7 @@ class ConfigService extends Service {
     config.createBy = ctx.state.user.userName;
     
     // 插入参数配置
-    const result = await ctx.service.db.mysql.ruoyi.sysConfigMapper.insertConfig([], config);
+    const result = await ctx.helper.getMasterDB(ctx).sysConfigMapper.insertConfig([], config);
     
     // 更新缓存
     if (result && result.length > 0) {
@@ -138,7 +138,7 @@ class ConfigService extends Service {
     config.updateBy = ctx.state.user.userName;
     
     // 更新参数配置
-    const result = await ctx.service.db.mysql.ruoyi.sysConfigMapper.updateConfig([], config);
+    const result = await ctx.helper.getMasterDB(ctx).sysConfigMapper.updateConfig([], config);
     
     // 更新缓存
     if (result && result.length > 0) {
@@ -182,7 +182,7 @@ class ConfigService extends Service {
       }
       
       // 删除参数配置
-      await ctx.service.db.mysql.ruoyi.sysConfigMapper.deleteConfigById([], {configId});
+      await ctx.helper.getMasterDB(ctx).sysConfigMapper.deleteConfigById([], {configId});
       
       // 删除缓存
       const cacheKey = `config:${config.configKey}`;
@@ -240,4 +240,5 @@ class ConfigService extends Service {
 }
 
 module.exports = ConfigService;
+
 

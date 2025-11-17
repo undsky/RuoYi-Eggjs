@@ -1,4 +1,4 @@
-/**
+﻿/**
  * 定时任务调度日志服务层
  * @Author: 姜彦汐
  * @Date: 2025-11-08
@@ -18,7 +18,7 @@ class JobLogService extends Service {
     const { ctx } = this;
     
     try {
-      const mapper = ctx.service.db.mysql.ruoyi.sysJobLogMapper;
+      const mapper = ctx.helper.getDB(ctx).sysJobLogMapper;
       
       // 构造分页参数
       const values = ctx.helper.page({ pageNum: page.pageNum, pageSize: page.pageSize });
@@ -54,7 +54,7 @@ class JobLogService extends Service {
     const { ctx } = this;
     
     try {
-      const mapper = ctx.service.db.mysql.ruoyi.sysJobLogMapper;
+      const mapper = ctx.helper.getDB(ctx).sysJobLogMapper;
       
       // 构造查询参数，支持时间范围查询
       const params = {
@@ -83,7 +83,7 @@ class JobLogService extends Service {
     const { ctx } = this;
     
     try {
-      const mapper = ctx.service.db.mysql.ruoyi.sysJobLogMapper;
+      const mapper = ctx.helper.getDB(ctx).sysJobLogMapper;
       const result = await mapper.selectJobLogById([jobLogId]);
       
       return result && result[0] ? result[0] : null;
@@ -102,7 +102,7 @@ class JobLogService extends Service {
     const { ctx } = this;
     
     try {
-      const mapper = ctx.service.db.mysql.ruoyi.sysJobLogMapper;
+      const mapper = ctx.helper.getDB(ctx).sysJobLogMapper;
       
       // 设置创建时间
       if (!jobLog.createTime) {
@@ -128,7 +128,7 @@ class JobLogService extends Service {
     const { ctx } = this;
     
     try {
-      const mapper = ctx.service.db.mysql.ruoyi.sysJobLogMapper;
+      const mapper = ctx.helper.getDB(ctx).sysJobLogMapper;
       const result = await mapper.deleteJobLogByIds([jobLogIds]);
       
       return result.affectedRows;
@@ -147,7 +147,7 @@ class JobLogService extends Service {
     const { ctx } = this;
     
     try {
-      const mapper = ctx.service.db.mysql.ruoyi.sysJobLogMapper;
+      const mapper = ctx.helper.getDB(ctx).sysJobLogMapper;
       const result = await mapper.deleteJobLogById([jobLogId]);
       
       return result.affectedRows;
@@ -165,7 +165,7 @@ class JobLogService extends Service {
     const { ctx } = this;
     
     try {
-      const mapper = ctx.service.db.mysql.ruoyi.sysJobLogMapper;
+      const mapper = ctx.helper.getDB(ctx).sysJobLogMapper;
       const result = await mapper.cleanJobLog([]);
       
       return result.affectedRows || 0;
@@ -191,7 +191,7 @@ class JobLogService extends Service {
         }
       };
       
-      const mapper = ctx.service.db.mysql.ruoyi.sysJobLogMapper;
+      const mapper = ctx.helper.getDB(ctx).sysJobLogMapper;
       const list = await mapper.selectJobLogList([], params);
       
       if (!list || list.length === 0) {
@@ -305,7 +305,7 @@ class JobLogService extends Service {
     const { ctx } = this;
     
     try {
-      const mapper = ctx.service.db.mysql.ruoyi.sysJobLogMapper;
+      const mapper = ctx.helper.getDB(ctx).sysJobLogMapper;
       
       // 查询所有日志
       const queryParams = {
@@ -348,3 +348,4 @@ class JobLogService extends Service {
 }
 
 module.exports = JobLogService;
+

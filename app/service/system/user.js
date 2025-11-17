@@ -1,5 +1,5 @@
 /*
- * @Description: 用户服务层
+ * @Description: 用户服务�?
  * @Author: AI Assistant
  * @Date: 2025-10-23
  */
@@ -30,7 +30,7 @@ class UserService extends Service {
     };
 
     // 查询列表
-    const users = await ctx.service.db.mysql.ruoyi.sysUserMapper.selectUserList(
+    const users = await ctx.helper.getDB(ctx).sysUserMapper.selectUserList(
       [], conditions
     );
 
@@ -45,21 +45,21 @@ class UserService extends Service {
   async selectUserById(userId) {
     const { ctx } = this;
 
-    return await ctx.service.db.mysql.ruoyi.sysUserMapper.selectUserById([], {
+    return await ctx.helper.getDB(ctx).sysUserMapper.selectUserById([], {
       userId,
     });
   }
 
   /**
-   * 根据用户名查询用户
-   * @param {string} userName - 用户名
+   * 根据用户名查询用�?
+   * @param {string} userName - 用户�?
    * @return {object} 用户信息
    */
   async selectUserByUserName(userName) {
     const { ctx } = this;
 
     const user =
-      await ctx.service.db.mysql.ruoyi.sysUserMapper.selectUserByUserName([], {
+      await ctx.helper.getDB(ctx).sysUserMapper.selectUserByUserName([], {
         userName,
       });
 
@@ -74,7 +74,7 @@ class UserService extends Service {
   async checkUserNameUnique(user) {
     const { ctx } = this;
 
-    return await ctx.service.db.mysql.ruoyi.sysUserMapper.checkUserNameUnique([], {
+    return await ctx.helper.getDB(ctx).sysUserMapper.checkUserNameUnique([], {
       userName: user.userName,
     });
   }
@@ -87,7 +87,7 @@ class UserService extends Service {
   async checkPhoneUnique(user) {
     const { ctx } = this;
 
-    return await ctx.service.db.mysql.ruoyi.sysUserMapper.checkPhoneUnique([], {
+    return await ctx.helper.getDB(ctx).sysUserMapper.checkPhoneUnique([], {
       phonenumber: user.phonenumber,
     });
   }
@@ -100,7 +100,7 @@ class UserService extends Service {
   async checkEmailUnique(user) {
     const { ctx } = this;
 
-    return await ctx.service.db.mysql.ruoyi.sysUserMapper.checkEmailUnique([], {
+    return await ctx.helper.getDB(ctx).sysUserMapper.checkEmailUnique([], {
         email: user.email,
       });
   }
@@ -118,13 +118,13 @@ class UserService extends Service {
   }
 
   /**
-   * 校验用户是否有数据权限
+   * 校验用户是否有数据权�?
    * @param {number} userId - 用户ID
    */
   async checkUserDataScope(userId) {
     const { ctx } = this;
 
-    // 管理员拥有所有数据权限
+    // 管理员拥有所有数据权�?
     if (ctx.helper.isAdmin(ctx.state.user.userId)) {
       return;
     }
@@ -144,7 +144,7 @@ class UserService extends Service {
     user.createBy = ctx.state.user.userName;
 
     // 插入用户
-    const result = await ctx.service.db.mysql.ruoyi.sysUserMapper.insertUser(
+    const result = await ctx.helper.getMasterDB(ctx).sysUserMapper.insertUser(
       [],
       user
     );
@@ -152,12 +152,12 @@ class UserService extends Service {
     if (result) {
       const userId = result;
 
-      // 插入用户与岗位关联
+      // 插入用户与岗位关�?
       if (user.postIds && user.postIds.length > 0) {
         await this.insertUserPost(userId, user.postIds);
       }
 
-      // 插入用户与角色关联
+      // 插入用户与角色关�?
       if (user.roleIds && user.roleIds.length > 0) {
         await this.insertUserRole(userId, user.roleIds);
       }
@@ -179,30 +179,30 @@ class UserService extends Service {
     // 设置更新信息
     user.updateBy = ctx.state.user.userName;
 
-    // 删除用户与角色关联
-    await ctx.service.db.mysql.ruoyi.sysUserRoleMapper.deleteUserRoleByUserId(
+    // 删除用户与角色关�?
+    await ctx.helper.getMasterDB(ctx).sysUserRoleMapper.deleteUserRoleByUserId(
       [],
       { userId: user.userId }
     );
 
-    // 插入用户与角色关联
+    // 插入用户与角色关�?
     if (user.roleIds && user.roleIds.length > 0) {
       await this.insertUserRole(user.userId, user.roleIds);
     }
 
-    // 删除用户与岗位关联
-    await ctx.service.db.mysql.ruoyi.sysUserPostMapper.deleteUserPostByUserId(
+    // 删除用户与岗位关�?
+    await ctx.helper.getMasterDB(ctx).sysUserPostMapper.deleteUserPostByUserId(
       [],
       { userId: user.userId }
     );
 
-    // 插入用户与岗位关联
+    // 插入用户与岗位关�?
     if (user.postIds && user.postIds.length > 0) {
       await this.insertUserPost(user.userId, user.postIds);
     }
 
     // 更新用户
-    const result = await ctx.service.db.mysql.ruoyi.sysUserMapper.updateUser(
+    const result = await ctx.helper.getMasterDB(ctx).sysUserMapper.updateUser(
       [],
       user
     );
@@ -211,7 +211,7 @@ class UserService extends Service {
   }
 
   /**
-   * 修改用户状态
+   * 修改用户状�?
    * @param {object} user - 用户对象
    * @return {number} 影响行数
    */
@@ -219,7 +219,7 @@ class UserService extends Service {
     const { ctx } = this;
 
     const result =
-      await ctx.service.db.mysql.ruoyi.sysUserMapper.updateUserStatus([], user);
+      await ctx.helper.getMasterDB(ctx).sysUserMapper.updateUserStatus([], user);
 
     return result && result.length > 0 ? 1 : 0;
   }
@@ -232,7 +232,7 @@ class UserService extends Service {
   async resetPwd(user) {
     const { ctx } = this;
 
-    const result = await ctx.service.db.mysql.ruoyi.sysUserMapper.resetUserPwd(
+    const result = await ctx.helper.getMasterDB(ctx).sysUserMapper.resetUserPwd(
       [],
       user
     );
@@ -248,19 +248,19 @@ class UserService extends Service {
   async deleteUserByIds(userIds) {
     const { ctx } = this;
 
-    // 删除用户与角色关联
-    await ctx.service.db.mysql.ruoyi.sysUserRoleMapper.deleteUserRole([], {
+    // 删除用户与角色关�?
+    await ctx.helper.getMasterDB(ctx).sysUserRoleMapper.deleteUserRole([], {
       array: userIds,
     });
 
-    // 删除用户与岗位关联
-    await ctx.service.db.mysql.ruoyi.sysUserPostMapper.deleteUserPost([], {
+    // 删除用户与岗位关�?
+    await ctx.helper.getMasterDB(ctx).sysUserPostMapper.deleteUserPost([], {
       array: userIds,
     });
 
     // 删除用户
     const result =
-      await ctx.service.db.mysql.ruoyi.sysUserMapper.deleteUserByIds([], {
+      await ctx.helper.getMasterDB(ctx).sysUserMapper.deleteUserByIds([], {
         array: userIds,
       });
 
@@ -275,18 +275,18 @@ class UserService extends Service {
   async insertUserAuth(userId, roleIds) {
     const { ctx } = this;
 
-    // 删除用户与角色关联
-    await ctx.service.db.mysql.ruoyi.sysUserRoleMapper.deleteUserRoleByUserId(
+    // 删除用户与角色关�?
+    await ctx.helper.getMasterDB(ctx).sysUserRoleMapper.deleteUserRoleByUserId(
       [],
       { userId }
     );
 
-    // 插入用户与角色关联
+    // 插入用户与角色关�?
     await this.insertUserRole(userId, roleIds);
   }
 
   /**
-   * 插入用户与角色关联
+   * 插入用户与角色关�?
    * @param {number} userId - 用户ID
    * @param {array} roleIds - 角色ID数组
    */
@@ -302,14 +302,14 @@ class UserService extends Service {
       roleId,
     }));
 
-    await ctx.service.db.mysql.ruoyi.sysUserRoleMapper.batchUserRole(
+    await ctx.helper.getMasterDB(ctx).sysUserRoleMapper.batchUserRole(
       [],
       {list:userRoles}
     );
   }
 
   /**
-   * 插入用户与岗位关联
+   * 插入用户与岗位关�?
    * @param {number} userId - 用户ID
    * @param {array} postIds - 岗位ID数组
    */
@@ -325,7 +325,7 @@ class UserService extends Service {
       postId,
     }));
 
-    await ctx.service.db.mysql.ruoyi.sysUserPostMapper.batchUserPost(
+    await ctx.helper.getMasterDB(ctx).sysUserPostMapper.batchUserPost(
       [],
       {list:userPosts}
     );
@@ -335,7 +335,7 @@ class UserService extends Service {
    * 导入用户数据
    * @param {array} userList - 用户列表
    * @param {boolean} updateSupport - 是否更新已存在的用户
-   * @param {string} operName - 操作人
+   * @param {string} operName - 操作�?
    * @return {string} 导入结果信息
    */
   async importUser(userList, updateSupport = false, operName) {
@@ -351,7 +351,7 @@ class UserService extends Service {
 
     for (const user of userList) {
       try {
-        // 校验用户名是否存在
+        // 校验用户名是否存�?
         const existUser = await this.selectUserByUserName(user.userName);
 
         if (!existUser) {
@@ -374,12 +374,12 @@ class UserService extends Service {
         }
       } catch (err) {
         failureNum++;
-        failureMsg.push(`用户 ${user.userName} 导入失败：${err.message}`);
+        failureMsg.push(`用户 ${user.userName} 导入失败�?{err.message}`);
       }
     }
 
     if (failureNum > 0) {
-      return `导入成功 ${successNum} 条，失败 ${failureNum} 条。${failureMsg.join(
+      return `导入成功 ${successNum} 条，失败 ${failureNum} 条�?{failureMsg.join(
         "; "
       )}`;
     }
@@ -399,7 +399,7 @@ class UserService extends Service {
     user.updateBy = ctx.state.user.userName;
 
     // 更新用户
-    const result = await ctx.service.db.mysql.ruoyi.sysUserMapper.updateUser(
+    const result = await ctx.helper.getMasterDB(ctx).sysUserMapper.updateUser(
       [],
       user
     );
@@ -421,7 +421,7 @@ class UserService extends Service {
       password,
     };
 
-    const result = await ctx.service.db.mysql.ruoyi.sysUserMapper.resetUserPwd(
+    const result = await ctx.helper.getMasterDB(ctx).sysUserMapper.resetUserPwd(
       [],
       user
     );
@@ -444,21 +444,21 @@ class UserService extends Service {
     };
 
     const result =
-      await ctx.service.db.mysql.ruoyi.sysUserMapper.updateUserAvatar([], user);
+      await ctx.helper.getMasterDB(ctx).sysUserMapper.updateUserAvatar([], user);
 
     return result && result.length > 0;
   }
 
   /**
-   * 查询用户角色组
-   * @param {string} userName - 用户名
-   * @return {string} 角色组
+   * 查询用户角色�?
+   * @param {string} userName - 用户�?
+   * @return {string} 角色�?
    */
   async selectUserRoleGroup(userName) {
     const { ctx } = this;
 
     const roles =
-      await ctx.service.db.mysql.ruoyi.sysUserRoleMapper.selectUserRoleGroup(
+      await ctx.helper.getMasterDB(ctx).sysUserRoleMapper.selectUserRoleGroup(
         [],
         { userName }
       );
@@ -467,15 +467,15 @@ class UserService extends Service {
   }
 
   /**
-   * 查询用户岗位组
-   * @param {string} userName - 用户名
-   * @return {string} 岗位组
+   * 查询用户岗位�?
+   * @param {string} userName - 用户�?
+   * @return {string} 岗位�?
    */
   async selectUserPostGroup(userName) {
     const { ctx } = this;
 
     const posts =
-      await ctx.service.db.mysql.ruoyi.sysUserPostMapper.selectUserPostGroup(
+      await ctx.helper.getMasterDB(ctx).sysUserPostMapper.selectUserPostGroup(
         [],
         { userName }
       );
@@ -484,28 +484,28 @@ class UserService extends Service {
   }
 
   /**
-   * 查询已分配用户角色列表
+   * 查询已分配用户角色列�?
    * @param {object} params - 查询参数
    * @return {array} 用户列表
    */
   async selectAllocatedList(params) {
     const { ctx } = this;
     
-    return await ctx.service.db.mysql.ruoyi.sysUserMapper.selectAllocatedList(
+    return await ctx.helper.getDB(ctx).sysUserMapper.selectAllocatedList(
       ctx.helper.page(params),
       params
     );
   }
 
   /**
-   * 查询未分配用户角色列表
+   * 查询未分配用户角色列�?
    * @param {object} params - 查询参数
    * @return {array} 用户列表
    */
   async selectUnallocatedList(params) {
     const { ctx } = this;
     
-    return await ctx.service.db.mysql.ruoyi.sysUserMapper.selectUnallocatedList(
+    return await ctx.helper.getDB(ctx).sysUserMapper.selectUnallocatedList(
       ctx.helper.page(params),
       params
     );
@@ -513,3 +513,4 @@ class UserService extends Service {
 }
 
 module.exports = UserService;
+
