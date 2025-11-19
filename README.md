@@ -1,4 +1,4 @@
-# ruoyi-eggjs
+# RuoYi-Eggjs
 
 > 若依（RuoYi）Node.js 版本，基于 Egg.js 企业级框架
 
