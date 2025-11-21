@@ -7,6 +7,7 @@
 const Controller = require('egg').Controller;
 const { Route, HttpGet, HttpPost, HttpPut, HttpDelete } = require('egg-decorator-router');
 const { RequiresPermissions } = require('../../decorator/permission');
+const { Log, BusinessType } = require('../../decorator/log');
 const ExcelUtil = require('../../extend/excel');
 
 module.exports = app => {
@@ -115,6 +116,7 @@ module.exports = app => {
      * POST /api/system/config
      * 权限：system:config:add
      */
+    @Log({ title: '参数管理', businessType: BusinessType.INSERT })
     @RequiresPermissions('system:config:add')
     @HttpPost('/')
     async add() {
@@ -154,6 +156,7 @@ module.exports = app => {
      * PUT /api/system/config
      * 权限：system:config:edit
      */
+    @Log({ title: '参数管理', businessType: BusinessType.UPDATE })
     @RequiresPermissions('system:config:edit')
     @HttpPut('/')
     async edit() {
@@ -193,6 +196,7 @@ module.exports = app => {
      * DELETE /api/system/config/:configIds
      * 权限：system:config:remove
      */
+    @Log({ title: '参数管理', businessType: BusinessType.DELETE })
     @RequiresPermissions('system:config:remove')
     @HttpDelete('/:configIds')
     async remove() {
@@ -225,6 +229,7 @@ module.exports = app => {
      * DELETE /api/system/config/refreshCache
      * 权限：system:config:remove
      */
+    @Log({ title: '参数管理', businessType: BusinessType.CLEAN })
     @RequiresPermissions('system:config:remove')
     @HttpDelete('/refreshCache')
     async refreshCache() {

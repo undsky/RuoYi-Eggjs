@@ -13,6 +13,7 @@ const {
   HttpDelete,
 } = require("egg-decorator-router");
 const { RequiresPermissions } = require("../../decorator/permission");
+const { Log, BusinessType } = require("../../decorator/log");
 const ExcelUtil = require("../../extend/excel");
 
 module.exports = (app) => {
@@ -94,6 +95,7 @@ module.exports = (app) => {
      * POST /api/system/role
      * 权限：system:role:add
      */
+    @Log({ title: "角色管理", businessType: BusinessType.INSERT })
     @RequiresPermissions("system:role:add")
     @HttpPost("/")
     async add() {
@@ -147,6 +149,7 @@ module.exports = (app) => {
      * PUT /api/system/role
      * 权限：system:role:edit
      */
+    @Log({ title: "角色管理", businessType: BusinessType.UPDATE })
     @RequiresPermissions("system:role:edit")
     @HttpPut("/")
     async edit() {
@@ -206,6 +209,7 @@ module.exports = (app) => {
      * DELETE /api/system/role/:roleIds
      * 权限：system:role:remove
      */
+    @Log({ title: "角色管理", businessType: BusinessType.DELETE })
     @RequiresPermissions("system:role:remove")
     @HttpDelete("/:roleIds")
     async remove() {
@@ -242,6 +246,7 @@ module.exports = (app) => {
      * 修改状态
      * PUT /api/system/role/changeStatus
      */
+    @Log({ title: "角色管理", businessType: BusinessType.UPDATE })
     @HttpPut("/changeStatus")
     async changeStatus() {
       const { ctx, service } = this;
@@ -275,6 +280,7 @@ module.exports = (app) => {
      * 修改数据权限
      * PUT /api/system/role/dataScope
      */
+    @Log({ title: "角色管理", businessType: BusinessType.GRANT })
     @HttpPut("/dataScope")
     async dataScope() {
       const { ctx, service } = this;
@@ -369,6 +375,7 @@ module.exports = (app) => {
      * PUT /api/system/role/authUser/cancel
      * 权限：system:role:edit
      */
+    @Log({ title: "角色管理", businessType: BusinessType.GRANT })
     @RequiresPermissions("system:role:edit")
     @HttpPut("/authUser/cancel")
     async cancelAuthUser() {
@@ -398,6 +405,7 @@ module.exports = (app) => {
      * PUT /api/system/role/authUser/cancelAll
      * 权限：system:role:edit
      */
+    @Log({ title: "角色管理", businessType: BusinessType.GRANT })
     @RequiresPermissions("system:role:edit")
     @HttpPut("/authUser/cancelAll")
     async cancelAuthUserAll() {
@@ -436,6 +444,7 @@ module.exports = (app) => {
      * PUT /api/system/role/authUser/selectAll
      * 权限：system:role:edit
      */
+    @Log({ title: "角色管理", businessType: BusinessType.GRANT })
     @RequiresPermissions("system:role:edit")
     @HttpPut("/authUser/selectAll")
     async selectAuthUserAll() {
@@ -511,6 +520,7 @@ module.exports = (app) => {
      * POST /api/system/role/export
      * 权限：system:role:export
      */
+    @Log({ title: "角色管理", businessType: BusinessType.EXPORT })
     @RequiresPermissions("system:role:export")
     @HttpPost("/export")
     async export() {

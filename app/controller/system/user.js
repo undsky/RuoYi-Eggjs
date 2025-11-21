@@ -7,6 +7,7 @@
 const Controller = require('egg').Controller;
 const { Route, HttpGet, HttpPost, HttpPut, HttpDelete } = require('egg-decorator-router');
 const { RequiresPermissions } = require('../../decorator/permission');
+const { Log, BusinessType } = require('../../decorator/log');
 const ExcelUtil = require('../../extend/excel');
 
 module.exports = app => {
@@ -127,6 +128,7 @@ module.exports = app => {
      * POST /api/system/user
      * 权限：system:user:add
      */
+    @Log({ title: '用户管理', businessType: BusinessType.INSERT })
     @RequiresPermissions('system:user:add')
     @HttpPost('/')
     async add() {
@@ -207,6 +209,7 @@ module.exports = app => {
      * PUT /api/system/user
      * 权限：system:user:edit
      */
+    @Log({ title: '用户管理', businessType: BusinessType.UPDATE })
     @RequiresPermissions('system:user:edit')
     @HttpPut('/')
     async edit() {
@@ -290,6 +293,7 @@ module.exports = app => {
      * DELETE /api/system/user/:userIds
      * 权限：system:user:remove
      */
+    @Log({ title: '用户管理', businessType: BusinessType.DELETE })
     @RequiresPermissions('system:user:remove')
     @HttpDelete('/:userIds')
     async remove() {
@@ -331,6 +335,7 @@ module.exports = app => {
      * PUT /api/system/user/resetPwd
      * 权限：system:user:resetPwd
      */
+    @Log({ title: '用户管理', businessType: BusinessType.UPDATE })
     @RequiresPermissions('system:user:resetPwd')
     @HttpPut('/resetPwd')
     async resetPwd() {
@@ -515,6 +520,7 @@ module.exports = app => {
      * POST /api/system/user/export
      * 权限：system:user:export
      */
+    @Log({ title: '用户管理', businessType: BusinessType.EXPORT })
     @RequiresPermissions('system:user:export')
     @HttpPost('/export')
     async export() {

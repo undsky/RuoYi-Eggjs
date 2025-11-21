@@ -7,6 +7,7 @@
 const Controller = require('egg').Controller;
 const { Route, HttpGet, HttpPost, HttpPut, HttpDelete } = require('egg-decorator-router');
 const { RequiresPermissions } = require('../../decorator/permission');
+const { Log, BusinessType } = require('../../decorator/log');
 const ExcelUtil = require('../../extend/excel');
 
 module.exports = app => {
@@ -87,6 +88,7 @@ module.exports = app => {
      * POST /api/system/post
      * 权限：system:post:add
      */
+    @Log({ title: '岗位管理', businessType: BusinessType.INSERT })
     @RequiresPermissions('system:post:add')
     @HttpPost('/')
     async add() {
@@ -136,6 +138,7 @@ module.exports = app => {
      * PUT /api/system/post
      * 权限：system:post:edit
      */
+    @Log({ title: '岗位管理', businessType: BusinessType.UPDATE })
     @RequiresPermissions('system:post:edit')
     @HttpPut('/')
     async edit() {
@@ -185,6 +188,7 @@ module.exports = app => {
      * DELETE /api/system/post/:postIds
      * 权限：system:post:remove
      */
+    @Log({ title: '岗位管理', businessType: BusinessType.DELETE })
     @RequiresPermissions('system:post:remove')
     @HttpDelete('/:postIds')
     async remove() {

@@ -7,6 +7,7 @@
 const Controller = require('egg').Controller;
 const { Route, HttpGet, HttpPost, HttpPut, HttpDelete } = require('egg-decorator-router');
 const { RequiresPermissions } = require('../../decorator/permission');
+const { Log, BusinessType } = require('../../decorator/log');
 const ExcelUtil = require('../../extend/excel');
 
 module.exports = app => {
@@ -87,6 +88,7 @@ module.exports = app => {
      * POST /api/system/dict/type
      * 权限：system:dict:add
      */
+    @Log({ title: '字典类型', businessType: BusinessType.INSERT })
     @RequiresPermissions('system:dict:add')
     @HttpPost('/')
     async add() {
@@ -126,6 +128,7 @@ module.exports = app => {
      * PUT /api/system/dict/type
      * 权限：system:dict:edit
      */
+    @Log({ title: '字典类型', businessType: BusinessType.UPDATE })
     @RequiresPermissions('system:dict:edit')
     @HttpPut('/')
     async edit() {
@@ -165,6 +168,7 @@ module.exports = app => {
      * DELETE /api/system/dict/type/:dictIds
      * 权限：system:dict:remove
      */
+    @Log({ title: '字典类型', businessType: BusinessType.DELETE })
     @RequiresPermissions('system:dict:remove')
     @HttpDelete('/:dictIds')
     async remove() {
@@ -197,6 +201,7 @@ module.exports = app => {
      * DELETE /api/system/dict/type/refreshCache
      * 权限：system:dict:remove
      */
+    @Log({ title: '字典类型', businessType: BusinessType.CLEAN })
     @RequiresPermissions('system:dict:remove')
     @HttpDelete('/refreshCache')
     async refreshCache() {

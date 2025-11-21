@@ -7,6 +7,7 @@
 const Controller = require('egg').Controller;
 const { Route, HttpGet, HttpPost, HttpPut, HttpDelete } = require('egg-decorator-router');
 const { RequiresPermissions } = require('../../decorator/permission');
+const { Log, BusinessType } = require('../../decorator/log');
 
 module.exports = app => {
 
@@ -86,6 +87,7 @@ module.exports = app => {
      * POST /api/system/notice
      * 权限：system:notice:add
      */
+    @Log({ title: '通知公告', businessType: BusinessType.INSERT })
     @RequiresPermissions('system:notice:add')
     @HttpPost('/')
     async add() {
@@ -115,6 +117,7 @@ module.exports = app => {
      * PUT /api/system/notice
      * 权限：system:notice:edit
      */
+    @Log({ title: '通知公告', businessType: BusinessType.UPDATE })
     @RequiresPermissions('system:notice:edit')
     @HttpPut('/')
     async edit() {
@@ -144,6 +147,7 @@ module.exports = app => {
      * DELETE /api/system/notice/:noticeIds
      * 权限：system:notice:remove
      */
+    @Log({ title: '通知公告', businessType: BusinessType.DELETE })
     @RequiresPermissions('system:notice:remove')
     @HttpDelete('/:noticeIds')
     async remove() {
