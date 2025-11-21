@@ -147,17 +147,40 @@
 + `/api/monitor/cache/clearCacheKey/:cacheKey` (DELETE) - 清空缓存键值
 + `/api/monitor/cache/clearCacheAll` (DELETE) - 清空全部缓存
 
-#### 定时任务监控 ✨ NEW
+#### 定时任务监控 ✅（已完成 - 使用 egg-bull）
+
+**基于 egg-bull 实现动态定时任务调度**：
+
+**核心特性**：
++ ✅ 动态配置：从数据库读取 cron 表达式，无需重启
++ ✅ 手动调用：支持立即执行任务
++ ✅ 失败重试：自动重试失败的任务
++ ✅ 分布式支持：基于 Redis，支持集群环境
++ ✅ 任务日志：自动记录执行日志到数据库
++ ✅ 可视化监控：可集成 Bull Board
+
+**API 接口**：
 + `/api/monitor/job/list` - 定时任务列表（分页）
 + `/api/monitor/job/:jobId` - 定时任务详情
 + `/api/monitor/job` (POST) - 新增定时任务
-+ `/api/monitor/job` (PUT) - 修改定时任务
++ `/api/monitor/job` (PUT) - 修改定时任务（包括 cron 表达式）
 + `/api/monitor/job/:jobIds` (DELETE) - 删除定时任务
-+ `/api/monitor/job/changeStatus` - 修改状态
-+ `/api/monitor/job/run` - 立即执行
++ `/api/monitor/job/changeStatus` - 修改状态（启动/暂停）
++ `/api/monitor/job/run` - 立即执行任务
 + `/api/monitor/job/export` - 导出定时任务
 
-**注意**: 定时任务为简化实现，完整功能需集成 node-cron 或 agenda
+**任务处理**：
++ 队列处理器：`app/queue/ryTask.js`
++ 任务执行类：`app/service/ryTask.js`
++ 调用示例：`ryTask.ryNoParams`、`ryTask.ryParams('ry')`
+
+**依赖**：
++ Redis（必需）：用于 Bull 队列存储
++ egg-bull：队列管理插件
+
+📖 **详细文档**：
++ [egg-bull 定时任务完整指南](docs/BULL_SCHEDULE_GUIDE.md)
++ [egg-bull 快速开始](docs/BULL_SCHEDULE_QUICK_START.md)
 
 ---
 

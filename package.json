@@ -17,10 +17,12 @@
     "declarations": true
   },
   "dependencies": {
+    "@hackycy/egg-bull": "^0.0.6",
     "archiver": "^7.0.1",
     "babel-plugin-transform-decorators-legacy": "^1.3.5",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "bcryptjs": "^2.4.3",
+    "bull": "^4.16.5",
     "cron-parser": "^4.9.0",
     "dayjs": "^1.11.10",
     "egg": "^3",
@@ -42,6 +44,7 @@
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
+    "@types/bull": "^3.15.9",
     "egg-bin": "^5",
     "eslint": "^8",
     "eslint-config-egg": "^13",

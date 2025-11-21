@@ -160,5 +160,29 @@ module.exports = (appInfo) => {
     readWriteSplit: false, // 是否启用读写分离
   };
 
+  // egg-bull 配置
+  config.bull = {
+    client: {
+      port: 6379,
+      host: "127.0.0.1",
+      password: "",
+      db: 0,
+    },
+    // 默认队列配置
+    default: {
+      // 任务失败后重试次数
+      attempts: 3,
+      // 失败后延迟重试时间（毫秒）
+      backoff: {
+        type: "fixed",
+        delay: 5000,
+      },
+      // 移除已完成的任务
+      removeOnComplete: true,
+      // 移除已失败的任务（保留最近100个）
+      removeOnFail: 100,
+    },
+  };
+
   return config;
 };

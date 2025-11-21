@@ -167,9 +167,9 @@ class JobService extends Service {
       if (result.affectedRows > 0 && result.insertId) {
         job.jobId = result.insertId;
 
-        // 创建定时任务调度（如果状态为正常）
+        // 使用 Bull 创建定时任务调度（如果状态为正常）
         if (job.status === "0") {
-          await this.createScheduleJob(job);
+          await this.createBullJob(job);
         }
       }
 
@@ -206,8 +206,8 @@ class JobService extends Service {
       const result = await mapper.updateJob([], job);
 
       if (result.affectedRows > 0) {
-        // 更新任务调度
-        await this.updateScheduleJob(job, oldJob);
+        // 使用 Bull 更新任务调度
+        await this.updateBullJob(job, oldJob);
       }
 
       return result.affectedRows;
@@ -240,9 +240,9 @@ class JobService extends Service {
       // 删除数据库记录
       const result = await mapper.deleteJobByIds([jobIds]);
 
-      // 删除任务调度
+      // 使用 Bull 删除任务调度
       for (const job of jobs) {
-        scheduleUtils.deleteJob(job.jobId, job.jobGroup);
+        await this.deleteBullJob(job);
       }
 
       return result.affectedRows;
@@ -279,13 +279,13 @@ class JobService extends Service {
       const result = await mapper.updateJob([],fullJob);
 
       if (result.affectedRows > 0) {
-        // 根据状态启动或暂停任务
+        // 使用 Bull 根据状态启动或暂停任务
         if (job.status === "0") {
           // 恢复任务
-          await this.resumeJob(fullJob);
+          await this.resumeBullJob(fullJob);
         } else {
           // 暂停任务
-          await this.pauseJob(fullJob);
+          await this.pauseBullJob(fullJob);
         }
       }
 
@@ -312,21 +312,8 @@ class JobService extends Service {
         return false;
       }
 
-      // 立即执行任务
-      const result = await scheduleUtils.runJobNow(
-        fullJob.jobId,
-        fullJob.jobGroup,
-        fullJob,
-        this.executeJob.bind(this)
-      );
-
-      // 如果任务不在调度中，直接执行
-      if (!result) {
-        await this.executeJob(fullJob);
-        return true;
-      }
-
-      return result;
+      // 使用 Bull 立即执行任务
+      return await this.runBullJob(fullJob);
     } catch (err) {
       ctx.logger.error("立即执行任务失败:", err);
       return false;
@@ -472,17 +459,13 @@ class JobService extends Service {
   }
 
   /**
-   * 初始化所有定时任务
-   * 项目启动时调用，从数据库加载所有正常状态的任务并启动
+   * 初始化所有任务（使用 Bull 队列）
    */
   async initJobs() {
-    const { ctx } = this;
+    const { ctx, app } = this;
 
     try {
-      ctx.logger.info("开始初始化定时任务...");
-
-      // 清空现有任务
-      scheduleUtils.clear();
+      ctx.logger.info("开始初始化定时任务（使用 Bull 队列）...");
 
       // 查询所有正常状态的任务
       const jobs = await this.selectJobAll();
@@ -491,7 +474,7 @@ class JobService extends Service {
       let successCount = 0;
       for (const job of jobs) {
         if (job.status === "0") {
-          const result = await this.createScheduleJob(job);
+          const result = await this.createBullJob(job);
           if (result) {
             successCount++;
           }
@@ -505,6 +488,155 @@ class JobService extends Service {
       ctx.logger.error("初始化定时任务失败:", err);
       throw err;
     }
+  }
+
+  /**
+   * 使用 Bull 创建定时任务
+   * @param {Object} job - 任务配置
+   */
+  async createBullJob(job) {
+    const { app, ctx } = this;
+
+    try {
+      // 生成唯一任务 ID
+      const jobKey = `${job.jobId}_${job.jobGroup}`;
+
+      // 移除旧的重复任务（如果存在）
+      const repeatableJobs = await app.queue.ryTask.getRepeatableJobs();
+      for (const oldJob of repeatableJobs) {
+        if (oldJob.name === jobKey) {
+          await app.queue.ryTask.removeRepeatableByKey(oldJob.key);
+        }
+      }
+
+      // 添加新的重复任务
+      await app.queue.ryTask.add(
+        jobKey, // 任务名称
+        {
+          invokeTarget: job.invokeTarget,
+          jobInfo: {
+            jobId: job.jobId,
+            jobName: job.jobName,
+            jobGroup: job.jobGroup,
+          },
+        },
+        {
+          repeat: {
+            cron: job.cronExpression, // 使用数据库中的 cron 表达式
+          },
+          removeOnComplete: true,
+          removeOnFail: 100,
+        }
+      );
+
+      ctx.logger.info(`[Bull] 创建定时任务成功: ${job.jobName} (${job.cronExpression})`);
+      return true;
+    } catch (err) {
+      ctx.logger.error(`[Bull] 创建定时任务失败: ${job.jobName}`, err);
+      return false;
+    }
+  }
+
+  /**
+   * 使用 Bull 更新定时任务
+   * @param {Object} newJob - 新任务配置
+   * @param {Object} oldJob - 旧任务配置
+   */
+  async updateBullJob(newJob, oldJob) {
+    const { ctx } = this;
+
+    try {
+      // 删除旧任务
+      await this.deleteBullJob(oldJob);
+
+      // 如果新任务状态为正常，创建新任务
+      if (newJob.status === "0") {
+        return await this.createBullJob(newJob);
+      }
+
+      return true;
+    } catch (err) {
+      ctx.logger.error(`[Bull] 更新定时任务失败: ${newJob.jobName}`, err);
+      return false;
+    }
+  }
+
+  /**
+   * 使用 Bull 删除定时任务
+   * @param {Object} job - 任务配置
+   */
+  async deleteBullJob(job) {
+    const { app, ctx } = this;
+
+    try {
+      const jobKey = `${job.jobId}_${job.jobGroup}`;
+
+      // 获取所有重复任务
+      const repeatableJobs = await app.queue.ryTask.getRepeatableJobs();
+
+      // 删除匹配的任务
+      for (const repeatJob of repeatableJobs) {
+        if (repeatJob.name === jobKey) {
+          await app.queue.ryTask.removeRepeatableByKey(repeatJob.key);
+          ctx.logger.info(`[Bull] 删除定时任务成功: ${job.jobName}`);
+        }
+      }
+
+      return true;
+    } catch (err) {
+      ctx.logger.error(`[Bull] 删除定时任务失败: ${job.jobName}`, err);
+      return false;
+    }
+  }
+
+  /**
+   * 使用 Bull 立即执行任务
+   * @param {Object} job - 任务配置
+   */
+  async runBullJob(job) {
+    const { app, ctx } = this;
+
+    try {
+      // 立即添加任务到队列（不是重复任务）
+      await app.queue.ryTask.add(
+        `manual_${job.jobId}_${Date.now()}`, // 唯一任务名
+        {
+          invokeTarget: job.invokeTarget,
+          jobInfo: {
+            jobId: job.jobId,
+            jobName: job.jobName,
+            jobGroup: job.jobGroup,
+          },
+        },
+        {
+          removeOnComplete: true,
+        }
+      );
+
+      ctx.logger.info(`[Bull] 手动执行任务: ${job.jobName}`);
+      return true;
+    } catch (err) {
+      ctx.logger.error(`[Bull] 手动执行任务失败: ${job.jobName}`, err);
+      return false;
+    }
+  }
+
+  /**
+   * 使用 Bull 暂停任务
+   * @param {Object} job - 任务配置
+   */
+  async pauseBullJob(job) {
+    // Bull 的暂停通过删除重复任务实现
+    return await this.deleteBullJob(job);
+  }
+
+  /**
+   * 使用 Bull 恢复任务
+   * @param {Object} job - 任务配置
+   */
+  async resumeBullJob(job) {
+    // Bull 的恢复通过重新创建任务实现
+    return await this.createBullJob(job);
   }
 }
 

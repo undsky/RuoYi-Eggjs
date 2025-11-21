@@ -39,4 +39,8 @@ module.exports = {
   static: {
     enable: true,
   },
+  bull: {
+    enable: true,
+    package: "@hackycy/egg-bull",
+  },
 };
