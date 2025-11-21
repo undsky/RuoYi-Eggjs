@@ -368,7 +368,7 @@ class MenuService extends Service {
     // 插入菜单
     const result = await ctx.helper.getMasterDB(ctx).sysMenuMapper.insertMenu([], menu);
     
-    return result && result.length > 0 ? 1 : 0;
+    return result;
   }
 
   /**
@@ -385,7 +385,7 @@ class MenuService extends Service {
     // 更新菜单
     const result = await ctx.helper.getMasterDB(ctx).sysMenuMapper.updateMenu([], menu);
     
-    return result && result.length > 0 ? 1 : 0;
+    return result;
   }
 
   /**
@@ -399,7 +399,7 @@ class MenuService extends Service {
     // 删除菜单
     const result = await ctx.helper.getMasterDB(ctx).sysMenuMapper.deleteMenuById([], {menuId});
     
-    return result && result.length > 0 ? 1 : 0;
+    return result;
   }
 
   /**

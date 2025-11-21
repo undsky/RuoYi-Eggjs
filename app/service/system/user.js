@@ -215,7 +215,7 @@ class UserService extends Service {
       .getMasterDB(ctx)
       .sysUserMapper.updateUser([], user);
 
-    return result && result.length > 0 ? 1 : 0;
+    return result;
   }
 
   /**
@@ -230,7 +230,7 @@ class UserService extends Service {
       .getMasterDB(ctx)
       .sysUserMapper.updateUserStatus([], user);
 
-    return result && result.length > 0 ? 1 : 0;
+    return result;
   }
 
   /**
@@ -245,7 +245,7 @@ class UserService extends Service {
       .getMasterDB(ctx)
       .sysUserMapper.resetUserPwd([], user);
 
-    return result && result.length > 0 ? 1 : 0;
+    return result;
   }
 
   /**
@@ -409,7 +409,7 @@ class UserService extends Service {
       .getMasterDB(ctx)
       .sysUserMapper.updateUser([], user);
 
-    return result && result.length > 0 ? 1 : 0;
+    return result;
   }
 
   /**
@@ -430,7 +430,7 @@ class UserService extends Service {
       .getMasterDB(ctx)
       .sysUserMapper.resetUserPwd([], user);
 
-    return result && result.length > 0 ? 1 : 0;
+    return result;
   }
 
   /**

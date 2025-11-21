@@ -485,7 +485,7 @@ module.exports = (app) => {
         // 查询角色已分配的部门ID列表
         result.checkedKeys = await service.system.dept.selectDeptListByRoleId(
           parseInt(roleId)
-        );
+        ) || [];
 
         // 查询所有部门树
         result.depts = await service.system.dept.selectDeptTreeList({});

@@ -64,7 +64,7 @@ class OperlogService extends Service {
   /**
    * 删除操作日志
    * @param {array} operIds - 操作日志ID数组
-   * @return {number} 影响行数
+   * @return {object} 删除结果
    */
   async deleteOperLogByIds(operIds) {
     const { ctx } = this;
@@ -72,7 +72,7 @@ class OperlogService extends Service {
     // 删除操作日志
     const result = await ctx.helper.getMasterDB(ctx).sysOperLogMapper.deleteOperLogByIds([], {operIds});
     
-    return result && result.length > 0 ? operIds.length : 0;
+    return result;
   }
 
   /**

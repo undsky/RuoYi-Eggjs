@@ -67,7 +67,7 @@ class NoticeService extends Service {
     // 插入通知公告
     const result = await ctx.helper.getMasterDB(ctx).sysNoticeMapper.insertNotice([], notice);
     
-    return result && result.length > 0 ? 1 : 0;
+    return result;
   }
 
   /**
@@ -84,7 +84,7 @@ class NoticeService extends Service {
     // 更新通知公告
     const result = await ctx.helper.getMasterDB(ctx).sysNoticeMapper.updateNotice([], notice);
     
-    return result && result.length > 0 ? 1 : 0;
+    return result;
   }
 
   /**
@@ -98,7 +98,7 @@ class NoticeService extends Service {
     // 删除通知公告
     const result = await ctx.helper.getMasterDB(ctx).sysNoticeMapper.deleteNoticeByIds([], {noticeIds});
     
-    return result && result.length > 0 ? noticeIds.length : 0;
+    return result;
   }
 }
 

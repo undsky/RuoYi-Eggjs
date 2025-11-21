@@ -238,7 +238,7 @@ class RoleService extends Service {
       await this.insertRoleMenu(role.roleId, role.menuIds);
     }
 
-    return result && result.length > 0 ? 1 : 0;
+    return result;
   }
 
   /**
@@ -254,7 +254,7 @@ class RoleService extends Service {
       role
     );
 
-    return result && result.length > 0 ? 1 : 0;
+    return result;
   }
 
   /**
@@ -282,7 +282,7 @@ class RoleService extends Service {
       await this.insertRoleDept(role.roleId, role.deptIds);
     }
 
-    return result && result.length > 0 ? 1 : 0;
+    return result;
   }
 
   /**
@@ -309,7 +309,7 @@ class RoleService extends Service {
         array: roleIds,
       });
 
-    return result && result.length > 0 ? roleIds.length : 0;
+    return result;
   }
 
   /**

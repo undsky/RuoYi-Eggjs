@@ -48,7 +48,7 @@ class LogininforService extends Service {
   /**
    * 删除登录日志
    * @param {array} infoIds - 日志ID数组
-   * @return {number} 影响行数
+   * @return {object} 删除结果
    */
   async deleteLogininforByIds(infoIds) {
     const { ctx } = this;
@@ -56,7 +56,7 @@ class LogininforService extends Service {
     // 删除登录日志
     const result = await ctx.helper.getMasterDB(ctx).sysLogininforMapper.deleteLogininforByIds([], {infoIds});
     
-    return result && result.length > 0 ? infoIds.length : 0;
+    return result;
   }
 
   /**

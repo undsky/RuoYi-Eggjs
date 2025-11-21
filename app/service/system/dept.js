@@ -293,7 +293,7 @@ class DeptService extends Service {
     // 插入部门
     const result = await ctx.helper.getMasterDB(ctx).sysDeptMapper.insertDept([], dept);
     
-    return result && result.length > 0 ? 1 : 0;
+    return result;
   }
 
   /**
@@ -332,7 +332,7 @@ class DeptService extends Service {
       await this.updateParentDeptStatusNormal(dept);
     }
     
-    return result && result.length > 0 ? 1 : 0;
+    return result;
   }
 
   /**
@@ -393,7 +393,7 @@ class DeptService extends Service {
     // 删除部门（软删除）
     const result = await ctx.helper.getMasterDB(ctx).sysDeptMapper.deleteDeptById([], {deptId});
     
-    return result && result.length > 0 ? 1 : 0;
+    return result;
   }
 }
 

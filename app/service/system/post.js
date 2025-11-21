@@ -128,7 +128,7 @@ class PostService extends Service {
     // 插入岗位
     const result = await ctx.helper.getMasterDB(ctx).sysPostMapper.insertPost([], post);
     
-    return result && result.length > 0 ? 1 : 0;
+    return result;
   }
 
   /**
@@ -145,7 +145,7 @@ class PostService extends Service {
     // 更新岗位
     const result = await ctx.helper.getMasterDB(ctx).sysPostMapper.updatePost([], post);
     
-    return result && result.length > 0 ? 1 : 0;
+    return result;
   }
 
   /**
@@ -159,7 +159,7 @@ class PostService extends Service {
     // 删除岗位
     const result = await ctx.helper.getMasterDB(ctx).sysPostMapper.deletePostByIds([], {postIds});
     
-    return result && result.length > 0 ? postIds.length : 0;
+    return result;
   }
 }
 
