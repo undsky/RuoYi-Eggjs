@@ -18,7 +18,7 @@ class CacheService extends Service {
     
     try {
       // 使用专门的监控客户端获取 Redis 信息
-      const redis = app.redisMonitor;
+      const redis = app.cache.default.store.getClient();
       
       // 获取 Redis INFO 信息
       const infoStr = await redis.info();
