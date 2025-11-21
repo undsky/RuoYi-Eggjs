@@ -1,7 +1,7 @@
 /*
  * @Description: 常量定义
- * @Author: AI Assistant
- * @Date: 2025-10-23
+ * @Author: 姜彦汐
+ * @Date: 2025-11-21
  */
 
 /**
@@ -116,16 +116,22 @@ module.exports.CacheConstants = {
   // 登录用户 Token 缓存键前缀
   LOGIN_TOKEN_KEY: 'login_tokens:',
   
-  // 在线用户缓存键前缀
-  ONLINE_USER_KEY: 'online_user:',
+  // 系统配置缓存键前缀
+  SYS_CONFIG_KEY: 'sys_config:',
+  
+  // 数据字典缓存键前缀
+  SYS_DICT_KEY: 'sys_dict:',
   
   // 验证码缓存键前缀
-  CAPTCHA_CODE_KEY: 'captcha:',
+  CAPTCHA_CODE_KEY: 'captcha_codes:',
   
-  // 用户权限缓存键前缀
-  USER_PERMISSIONS_KEY: 'user:permissions:',
+  // 防重提交缓存键前缀
+  REPEAT_SUBMIT_KEY: 'repeat_submit:',
   
-  // 用户角色缓存键前缀
-  USER_ROLES_KEY: 'user:roles:'
+  // 限流处理缓存键前缀
+  RATE_LIMIT_KEY: 'rate_limit:',
+  
+  // 密码错误次数缓存键前缀
+  PWD_ERR_CNT_KEY: 'pwd_err_cnt:'
 };
 

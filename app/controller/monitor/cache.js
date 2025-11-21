@@ -1,7 +1,7 @@
 /*
  * @Description: 缓存监控控制器
- * @Author: AI Assistant
- * @Date: 2025-10-24
+ * @Author: 姜彦汐
+ * @Date: 2025-11-21
  */
 
 const Controller = require('egg').Controller;
