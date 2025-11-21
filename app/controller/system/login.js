@@ -141,6 +141,16 @@ module.exports = (app) => {
           userId
         );
 
+        // 检查初始密码是否需要修改
+        const isDefaultModifyPwd = await this.initPasswordIsModify(
+          user.pwdUpdateDate
+        );
+
+        // 检查密码是否过期
+        const isPasswordExpired = await this.passwordIsExpiration(
+          user.pwdUpdateDate
+        );
+
         ctx.body = {
           code: 200,
           msg: "查询成功",
@@ -158,6 +168,8 @@ module.exports = (app) => {
           },
           roles: roles.map((r) => r.roleKey),
           permissions,
+          isDefaultModifyPwd,
+          isPasswordExpired,
         };
       } catch (err) {
         ctx.logger.error("获取用户信息失败:", err);
@@ -166,6 +178,62 @@ module.exports = (app) => {
           msg: err.message || "获取用户信息失败",
         };
       }
+    }
+
+    /**
+     * 检查初始密码是否需要修改
+     * @param {Date} pwdUpdateDate - 密码更新日期
+     * @return {boolean} 是否需要修改
+     */
+    async initPasswordIsModify(pwdUpdateDate) {
+      const { ctx, service } = this;
+
+      // 获取配置：是否启用初始密码修改提醒
+      const initPasswordModify = await service.system.config.selectConfigByKey(
+        "sys.account.initPasswordModify"
+      );
+
+      // 如果配置启用(1)且密码更新日期为空，则需要提醒修改
+      return (
+        initPasswordModify === "1" &&
+        (pwdUpdateDate === null || pwdUpdateDate === undefined)
+      );
+    }
+
+    /**
+     * 检查密码是否过期
+     * @param {Date} pwdUpdateDate - 密码更新日期
+     * @return {boolean} 是否过期
+     */
+    async passwordIsExpiration(pwdUpdateDate) {
+      const { ctx, service } = this;
+
+      // 获取配置：密码有效期（天数）
+      const passwordValidateDays =
+        await service.system.config.selectConfigByKey(
+          "sys.account.passwordValidateDays"
+        );
+
+      // 如果配置了密码有效期
+      if (passwordValidateDays && parseInt(passwordValidateDays) > 0) {
+        const days = parseInt(passwordValidateDays);
+
+        // 如果从未修改过初始密码，直接提醒过期
+        if (!pwdUpdateDate) {
+          return true;
+        }
+
+        // 计算密码更新日期与当前日期的天数差
+        const nowDate = new Date();
+        const updateDate = new Date(pwdUpdateDate);
+        const diffTime = nowDate.getTime() - updateDate.getTime();
+        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+        // 如果超过有效期，则密码过期
+        return diffDays > days;
+      }
+
+      return false;
     }
 
     /**

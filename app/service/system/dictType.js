@@ -197,32 +197,31 @@ class DictTypeService extends Service {
    */
   async loadingDictCache() {
     const { ctx, app } = this;
-    
+
     // 查询所有正常状态的字典数据
-    const sql = `
-      SELECT dict_code, dict_sort, dict_label, dict_value, dict_type, css_class, list_class, is_default, status, create_time, remark
-      FROM sys_dict_data
-      WHERE status = '0'
-      ORDER BY dict_type, dict_sort
-    `;
-    
-    const dictDataList = await ctx.app.mysql.get('ruoyi').query(sql);
-    
+    const dictDataList = await ctx.helper
+      .getDB(ctx)
+      .sysDictDataMapper.selectDictDataList([], { status: "0" });
+
     // 按字典类型分组
     const dictDataMap = {};
-    dictDataList.forEach(data => {
+    dictDataList.forEach((data) => {
       if (!dictDataMap[data.dictType]) {
         dictDataMap[data.dictType] = [];
       }
       dictDataMap[data.dictType].push(data);
     });
-    
-    // 存入缓存
+
+    // 存入缓存（每组已按 dictSort 排序）
     for (const dictType in dictDataMap) {
-      await app.cache.default.set(`dict_${dictType}`, JSON.stringify(dictDataMap[dictType]), 0);
+      await app.cache.default.set(
+        `dict_${dictType}`,
+        JSON.stringify(dictDataMap[dictType]),
+        0
+      );
     }
-    
-    ctx.logger.info('字典缓存加载完成');
+
+    ctx.logger.info("字典缓存加载完成");
   }
 
   /**

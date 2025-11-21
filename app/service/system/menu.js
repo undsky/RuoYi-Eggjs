@@ -4,20 +4,19 @@
  * @Date: 2025-10-23
  */
 
-const Service = require('egg').Service;
+const Service = require("egg").Service;
 
 // 菜单常量
-const TYPE_DIR = 'M';     // 目录
-const TYPE_MENU = 'C';    // 菜单
-const TYPE_BUTTON = 'F';  // 按钮
-const YES_FRAME = 0;      // 是外链
-const NO_FRAME = 1;       // 否外链
-const LAYOUT = 'Layout';
-const PARENT_VIEW = 'ParentView';
-const INNER_LINK = 'InnerLink';
+const TYPE_DIR = "M"; // 目录
+const TYPE_MENU = "C"; // 菜单
+const TYPE_BUTTON = "F"; // 按钮
+const YES_FRAME = 0; // 是外链
+const NO_FRAME = 1; // 否外链
+const LAYOUT = "Layout";
+const PARENT_VIEW = "ParentView";
+const INNER_LINK = "InnerLink";
 
 class MenuService extends Service {
-
   /**
    * 查询菜单列表
    * @param {object} menu - 查询参数
@@ -26,17 +25,19 @@ class MenuService extends Service {
    */
   async selectMenuList(menu = {}, userId) {
     const { ctx } = this;
-    
+
     let menus;
-    
+
     // 管理员显示所有菜单信息
     if (ctx.helper.isAdmin(userId)) {
       const conditions = {
         menuName: menu.menuName,
         visible: menu.visible,
-        status: menu.status
+        status: menu.status,
       };
-      menus = await ctx.helper.getDB(ctx).sysMenuMapper.selectMenuList([], conditions);
+      menus = await ctx.helper
+        .getDB(ctx)
+        .sysMenuMapper.selectMenuList([], conditions);
     } else {
       // 普通用户显示有权限的菜单
       const conditions = {
@@ -44,12 +45,14 @@ class MenuService extends Service {
         visible: menu.visible,
         status: menu.status,
         params: {
-          userId
-        }
+          userId,
+        },
       };
-      menus = await ctx.helper.getDB(ctx).sysMenuMapper.selectMenuListByUserId([], conditions);
+      menus = await ctx.helper
+        .getDB(ctx)
+        .sysMenuMapper.selectMenuListByUserId([], conditions);
     }
-    
+
     return menus || [];
   }
 
@@ -60,9 +63,11 @@ class MenuService extends Service {
    */
   async selectMenuById(menuId) {
     const { ctx } = this;
-    
-    const menus = await ctx.helper.getDB(ctx).sysMenuMapper.selectMenuById([], {menuId});
-    
+
+    const menus = await ctx.helper
+      .getDB(ctx)
+      .sysMenuMapper.selectMenuById([], { menuId });
+
     return menus && menus.length > 0 ? menus[0] : null;
   }
 
@@ -73,32 +78,33 @@ class MenuService extends Service {
    */
   async selectPermsByUserId(userId) {
     const { ctx } = this;
-    
-    // 如果是管理员，返回所有权限
-    if (ctx.helper.isAdmin(userId)) {
-      return ['*:*:*'];
-    }
-    
-    // 查询用户权限
-    const sql = `
-      SELECT DISTINCT m.perms
-      FROM sys_menu m
-      LEFT JOIN sys_role_menu rm ON m.menu_id = rm.menu_id
-      LEFT JOIN sys_user_role ur ON ur.role_id = rm.role_id
-      LEFT JOIN sys_role r ON r.role_id = ur.role_id
-      WHERE m.status = '0' AND r.status = '0' AND ur.user_id = ?
-    `;
-    
-    const rows = await ctx.app.mysql.get('ruoyi').query(sql, [userId]);
-    
+
     const perms = [];
-    rows.forEach(row => {
-      if (row.perms && row.perms.trim()) {
-        perms.push(...row.perms.trim().split(','));
+
+    // 管理员拥有所有权限
+    if (ctx.helper.isAdmin(userId)) {
+      perms.push("*:*:*");
+      return perms;
+    }
+
+    // 查询用户拥有的角色列表
+    const roles = await ctx.helper
+      .getDB(ctx)
+      .sysRoleMapper.selectRolePermissionByUserId([], { userId });
+
+    if (roles && roles.length > 0) {
+      // 多角色设置permissions属性，以便数据权限匹配权限
+      for (const role of roles) {
+        // 角色状态为正常(0)且不是管理员角色
+        if (role.status === "0" && role.roleKey !== "admin") {
+          const rolePerms = await this.selectMenuPermsByRoleId(role.roleId);
+          perms.push(...rolePerms);
+        }
       }
-    });
-    
-    return [...new Set(perms)];  // 去重
+    }
+
+    // 去重并返回
+    return [...new Set(perms)];
   }
 
   /**
@@ -108,17 +114,19 @@ class MenuService extends Service {
    */
   async selectMenuTreeByUserId(userId) {
     const { ctx } = this;
-    
+
     let menus;
-    
+
     // 如果是管理员，查询所有菜单
     if (ctx.helper.isAdmin(userId)) {
       menus = await ctx.helper.getDB(ctx).sysMenuMapper.selectMenuTreeAll();
     } else {
       // 查询用户菜单
-      menus = await ctx.helper.getDB(ctx).sysMenuMapper.selectMenuTreeByUserId([],{userId});
+      menus = await ctx.helper
+        .getDB(ctx)
+        .sysMenuMapper.selectMenuTreeByUserId([], { userId });
     }
-    
+
     // 使用 getChildPerms 构建菜单树
     return this.getChildPerms(menus, 0);
   }
@@ -131,35 +139,35 @@ class MenuService extends Service {
    */
   buildRouterMenuTree(menus, parentId) {
     const tree = [];
-    
-    menus.forEach(menu => {
+
+    menus.forEach((menu) => {
       if (menu.parentId === parentId) {
         const children = this.buildRouterMenuTree(menus, menu.menuId);
-        
+
         const menuNode = {
           name: menu.routeName || menu.menuName,
           path: menu.path,
-          hidden: menu.visible === '1',
+          hidden: menu.visible === "1",
           component: menu.component,
           query: menu.query,
           meta: {
             title: menu.menuName,
             icon: menu.icon,
-            noCache: menu.isCache === '1',
-            link: menu.path
-          }
+            noCache: menu.isCache === "1",
+            link: menu.path,
+          },
         };
-        
+
         if (children.length > 0) {
           menuNode.children = children;
           menuNode.alwaysShow = true;
-          menuNode.redirect = 'noRedirect';
+          menuNode.redirect = "noRedirect";
         }
-        
+
         tree.push(menuNode);
       }
     });
-    
+
     return tree;
   }
 
@@ -171,7 +179,7 @@ class MenuService extends Service {
    */
   getChildPerms(list, parentId) {
     const returnList = [];
-    
+
     for (const menu of list) {
       // 根据传入的某个父节点ID，遍历该父节点的所有子节点
       if (menu.parentId === parentId) {
@@ -179,7 +187,7 @@ class MenuService extends Service {
         returnList.push(menu);
       }
     }
-    
+
     return returnList;
   }
 
@@ -190,19 +198,19 @@ class MenuService extends Service {
    */
   buildMenuTree(menus) {
     const { ctx } = this;
-    
+
     // 找出所有菜单ID
-    const menuIds = menus.map(m => m.menuId);
-    
+    const menuIds = menus.map((m) => m.menuId);
+
     // 找出顶级节点（父节点不在列表中的）
     const tree = [];
-    menus.forEach(menu => {
+    menus.forEach((menu) => {
       if (!menuIds.includes(menu.parentId)) {
         this.recursionFn(menus, menu);
         tree.push(menu);
       }
     });
-    
+
     return tree.length > 0 ? tree : menus;
   }
 
@@ -215,7 +223,7 @@ class MenuService extends Service {
     // 得到子节点列表
     const childList = this.getChildList(list, t);
     t.children = childList;
-    
+
     for (const tChild of childList) {
       if (this.hasChild(list, tChild)) {
         this.recursionFn(list, tChild);
@@ -231,13 +239,13 @@ class MenuService extends Service {
    */
   getChildList(list, t) {
     const tlist = [];
-    
+
     for (const n of list) {
       if (n.parentId === t.menuId) {
         tlist.push(n);
       }
     }
-    
+
     return tlist;
   }
 
@@ -268,20 +276,20 @@ class MenuService extends Service {
    */
   convertToTreeSelect(menus) {
     const treeSelect = [];
-    
-    menus.forEach(menu => {
+
+    menus.forEach((menu) => {
       const node = {
         id: menu.menuId,
-        label: menu.menuName
+        label: menu.menuName,
       };
-      
+
       if (menu.children && menu.children.length > 0) {
         node.children = this.convertToTreeSelect(menu.children);
       }
-      
+
       treeSelect.push(node);
     });
-    
+
     return treeSelect;
   }
 
@@ -292,13 +300,14 @@ class MenuService extends Service {
    */
   async selectMenuListByRoleId(roleId) {
     const { ctx } = this;
-    
+
     // 查询角色信息
     const role = await ctx.service.system.role.selectRoleById(roleId);
     const menuCheckStrictly = role && role.menuCheckStrictly;
 
-    return await ctx.helper.getDB(ctx).sysMenuMapper.selectMenuListByRoleId([],{roleId,menuCheckStrictly});
-    
+    return await ctx.helper
+      .getDB(ctx)
+      .sysMenuMapper.selectMenuListByRoleId([], { roleId, menuCheckStrictly });
   }
 
   /**
@@ -308,19 +317,21 @@ class MenuService extends Service {
    */
   async checkMenuNameUnique(menu) {
     const { ctx } = this;
-    
+
     const menuId = menu.menuId || -1;
     const conditions = {
       menuName: menu.menuName,
-      parentId: menu.parentId
+      parentId: menu.parentId,
     };
-    
-    const menus = await ctx.helper.getDB(ctx).sysMenuMapper.checkMenuNameUnique([], conditions);
-    
+
+    const menus = await ctx.helper
+      .getDB(ctx)
+      .sysMenuMapper.checkMenuNameUnique([], conditions);
+
     if (menus && menus.length > 0 && menus[0].menuId !== menuId) {
       return false;
     }
-    
+
     return true;
   }
 
@@ -331,9 +342,11 @@ class MenuService extends Service {
    */
   async hasChildByMenuId(menuId) {
     const { ctx } = this;
-    
-    const result = await ctx.helper.getDB(ctx).sysMenuMapper.hasChildByMenuId([], {menuId});
-    
+
+    const result = await ctx.helper
+      .getDB(ctx)
+      .sysMenuMapper.hasChildByMenuId([], { menuId });
+
     return result && result.length > 0 && result[0].count > 0;
   }
 
@@ -344,14 +357,12 @@ class MenuService extends Service {
    */
   async checkMenuExistRole(menuId) {
     const { ctx } = this;
-    
-    const sql = `
-      SELECT COUNT(1) as count FROM sys_role_menu WHERE menu_id = ?
-    `;
-    
-    const result = await ctx.app.mysql.get('ruoyi').query(sql, [menuId]);
-    
-    return result && result.length > 0 && result[0].count > 0;
+
+    const result = await ctx.helper
+      .getDB(ctx)
+      .sysRoleMenuMapper.checkMenuExistRole([], { menuId });
+
+    return result && result.length > 0;
   }
 
   /**
@@ -361,13 +372,15 @@ class MenuService extends Service {
    */
   async insertMenu(menu) {
     const { ctx } = this;
-    
+
     // 设置创建信息
     menu.createBy = ctx.state.user.userName;
-    
+
     // 插入菜单
-    const result = await ctx.helper.getMasterDB(ctx).sysMenuMapper.insertMenu([], menu);
-    
+    const result = await ctx.helper
+      .getMasterDB(ctx)
+      .sysMenuMapper.insertMenu([], menu);
+
     return result;
   }
 
@@ -378,13 +391,15 @@ class MenuService extends Service {
    */
   async updateMenu(menu) {
     const { ctx } = this;
-    
+
     // 设置更新信息
     menu.updateBy = ctx.state.user.userName;
-    
+
     // 更新菜单
-    const result = await ctx.helper.getMasterDB(ctx).sysMenuMapper.updateMenu([], menu);
-    
+    const result = await ctx.helper
+      .getMasterDB(ctx)
+      .sysMenuMapper.updateMenu([], menu);
+
     return result;
   }
 
@@ -395,10 +410,12 @@ class MenuService extends Service {
    */
   async deleteMenuById(menuId) {
     const { ctx } = this;
-    
+
     // 删除菜单
-    const result = await ctx.helper.getMasterDB(ctx).sysMenuMapper.deleteMenuById([], {menuId});
-    
+    const result = await ctx.helper
+      .getMasterDB(ctx)
+      .sysMenuMapper.deleteMenuById([], { menuId });
+
     return result;
   }
 
@@ -409,24 +426,23 @@ class MenuService extends Service {
    */
   async selectMenuPermsByRoleId(roleId) {
     const { ctx } = this;
+
+    // 调用 Mapper 获取权限字符串列表
+    const permsList = await ctx.helper
+      .getDB(ctx)
+      .sysMenuMapper.selectMenuPermsByRoleId([roleId]);
+
+    const permsSet = [];
     
-    const sql = `
-      SELECT DISTINCT m.perms
-      FROM sys_menu m
-      LEFT JOIN sys_role_menu rm ON m.menu_id = rm.menu_id
-      WHERE m.status = '0' AND rm.role_id = ?
-    `;
-    
-    const rows = await ctx.app.mysql.get('ruoyi').query(sql, [roleId]);
-    
-    const perms = [];
-    rows.forEach(row => {
-      if (row.perms && row.perms.trim()) {
-        perms.push(...row.perms.trim().split(','));
+    // 处理每个权限字符串，按逗号分割
+    for (const perm of permsList) {
+      if (perm && perm.trim()) {
+        permsSet.push(...perm.trim().split(","));
       }
-    });
-    
-    return [...new Set(perms)];  // 去重
+    }
+
+    // 去重并返回
+    return [...new Set(permsSet)];
   }
 
   /**
@@ -436,10 +452,10 @@ class MenuService extends Service {
    */
   buildMenus(menus) {
     const routers = [];
-    
+
     for (const menu of menus) {
       const router = {
-        hidden: menu.visible === '1',
+        hidden: menu.visible === "1",
         name: this.getRouteName(menu),
         path: this.getRouterPath(menu),
         component: this.getComponent(menu),
@@ -447,17 +463,17 @@ class MenuService extends Service {
         meta: {
           title: menu.menuName,
           icon: menu.icon,
-          noCache: menu.isCache === '1',
-          link: null //menu.path
-        }
+          noCache: menu.isCache === "1",
+          link: null, //menu.path
+        },
       };
-      
+
       const cMenus = menu.children || [];
-      
+
       // 目录类型并且有子菜单
       if (cMenus.length > 0 && menu.menuType === TYPE_DIR) {
         router.alwaysShow = true;
-        router.redirect = 'noRedirect';
+        router.redirect = "noRedirect";
         router.children = this.buildMenus(cMenus);
       }
       // 菜单内部跳转
@@ -470,10 +486,10 @@ class MenuService extends Service {
           meta: {
             title: menu.menuName,
             icon: menu.icon,
-            noCache: menu.isCache === '1',
-            link: null //menu.path
+            noCache: menu.isCache === "1",
+            link: null, //menu.path
           },
-          query: menu.query
+          query: menu.query,
         };
         router.children = [children];
       }
@@ -481,9 +497,9 @@ class MenuService extends Service {
       else if (menu.parentId === 0 && this.isInnerLink(menu)) {
         router.meta = {
           title: menu.menuName,
-          icon: menu.icon
+          icon: menu.icon,
         };
-        router.path = '/';
+        router.path = "/";
         const routerPath = this.innerLinkReplaceEach(menu.path);
         const children = {
           path: routerPath,
@@ -492,15 +508,15 @@ class MenuService extends Service {
           meta: {
             title: menu.menuName,
             icon: menu.icon,
-            link: menu.path
-          }
+            link: menu.path,
+          },
         };
         router.children = [children];
       }
-      
+
       routers.push(router);
     }
-    
+
     return routers;
   }
 
@@ -512,7 +528,7 @@ class MenuService extends Service {
   getRouteName(menu) {
     // 非外链并且是一级目录（类型为目录）
     if (this.isMenuFrame(menu)) {
-      return '';
+      return "";
     }
     return this.getRouteNameFromPath(menu.routeName, menu.path);
   }
@@ -524,7 +540,7 @@ class MenuService extends Service {
    * @return {string} 路由名称（首字母大写）
    */
   getRouteNameFromPath(name, path) {
-    const routerName = name || path || '';
+    const routerName = name || path || "";
     // 首字母大写
     return routerName.charAt(0).toUpperCase() + routerName.slice(1);
   }
@@ -536,20 +552,24 @@ class MenuService extends Service {
    */
   getRouterPath(menu) {
     let routerPath = menu.path;
-    
+
     // 内链打开外网方式
     if (menu.parentId !== 0 && this.isInnerLink(menu)) {
       routerPath = this.innerLinkReplaceEach(routerPath);
     }
     // 非外链并且是一级目录（类型为目录）
-    else if (menu.parentId === 0 && menu.menuType === TYPE_DIR && menu.isFrame === NO_FRAME) {
-      routerPath = '/' + menu.path;
+    else if (
+      menu.parentId === 0 &&
+      menu.menuType === TYPE_DIR &&
+      menu.isFrame === NO_FRAME
+    ) {
+      routerPath = "/" + menu.path;
     }
     // 非外链并且是一级目录（类型为菜单）
     else if (this.isMenuFrame(menu)) {
-      routerPath = '/';
+      routerPath = "/";
     }
-    
+
     return routerPath;
   }
 
@@ -560,17 +580,19 @@ class MenuService extends Service {
    */
   getComponent(menu) {
     let component = LAYOUT;
-    
+
     if (menu.component && !this.isMenuFrame(menu)) {
       component = menu.component;
-    }
-    else if (!menu.component && menu.parentId !== 0 && this.isInnerLink(menu)) {
+    } else if (
+      !menu.component &&
+      menu.parentId !== 0 &&
+      this.isInnerLink(menu)
+    ) {
       component = INNER_LINK;
-    }
-    else if (!menu.component && this.isParentView(menu)) {
+    } else if (!menu.component && this.isParentView(menu)) {
       component = PARENT_VIEW;
     }
-    
+
     return component;
   }
 
@@ -580,9 +602,11 @@ class MenuService extends Service {
    * @return {boolean} 结果
    */
   isMenuFrame(menu) {
-    return menu.parentId === 0 
-      && menu.menuType === TYPE_MENU 
-      && menu.isFrame === NO_FRAME;
+    return (
+      menu.parentId === 0 &&
+      menu.menuType === TYPE_MENU &&
+      menu.isFrame === NO_FRAME
+    );
   }
 
   /**
@@ -610,7 +634,7 @@ class MenuService extends Service {
    */
   isHttp(link) {
     if (!link) return false;
-    return link.startsWith('http://') || link.startsWith('https://');
+    return link.startsWith("http://") || link.startsWith("https://");
   }
 
   /**
@@ -619,17 +643,15 @@ class MenuService extends Service {
    * @return {string} 替换后的内链域名
    */
   innerLinkReplaceEach(path) {
-    if (!path) return '';
-    
+    if (!path) return "";
+
     return path
-      .replace(/http:\/\//g, '')
-      .replace(/https:\/\//g, '')
-      .replace(/www\./g, '')
-      .replace(/\./g, '/')
-      .replace(/:/g, '/');
+      .replace(/http:\/\//g, "")
+      .replace(/https:\/\//g, "")
+      .replace(/www\./g, "")
+      .replace(/\./g, "/")
+      .replace(/:/g, "/");
   }
 }
 
 module.exports = MenuService;
-
-

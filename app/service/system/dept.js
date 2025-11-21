@@ -343,25 +343,23 @@ class DeptService extends Service {
    */
   async updateDeptChildren(deptId, newAncestors, oldAncestors) {
     const { ctx } = this;
-    
+
     // 查询所有子部门
-    const sql = `
-      SELECT * FROM sys_dept WHERE FIND_IN_SET(?, ancestors)
-    `;
-    
-    const children = await ctx.app.mysql.get('ruoyi').query(sql, [deptId]);
-    
-    if (children.length === 0) {
-      return;
-    }
-    
+    const children = await ctx.helper
+      .getDB(ctx)
+      .sysDeptMapper.selectChildrenDeptById([deptId]);
+
     // 更新子部门的祖级列表
     for (const child of children) {
       child.ancestors = child.ancestors.replace(oldAncestors, newAncestors);
     }
-    
+
     // 批量更新
-    await ctx.helper.getMasterDB(ctx).sysDeptMapper.updateDeptChildren([], children);
+    if (children.length > 0) {
+      await ctx.helper
+        .getMasterDB(ctx)
+        .sysDeptMapper.updateDeptChildren([], { depts: children });
+    }
   }
 
   /**
