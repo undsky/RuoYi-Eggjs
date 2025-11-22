@@ -587,9 +587,8 @@ class JobService extends Service {
     const { app, ctx } = this;
 
     try {
-      // 立即添加任务到队列（不是重复任务）
+      // 立即添加任务到队列（不使用命名任务，使用默认处理器）
       await app.queue.ryTask.add(
-        `manual_${job.jobId}_${Date.now()}`, // 唯一任务名
         {
           invokeTarget: job.invokeTarget,
           jobInfo: {
@@ -600,6 +599,8 @@ class JobService extends Service {
         },
         {
           removeOnComplete: true,
+          // 设置高优先级，确保立即执行
+          priority: 1,
         }
       );
 
