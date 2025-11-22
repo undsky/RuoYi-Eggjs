@@ -204,6 +204,18 @@ class GenService extends Service {
         return [];
       }
       
+      // 处理以 is 开头的属性，生成不带 is 的对应属性
+      result.forEach(column => {
+        Object.keys(column).forEach(key => {
+          // 如果属性名以 is 开头且长度大于 2
+          if (key.startsWith('is') && key.length > 2) {
+            // 生成不带 is 的属性名（首字母小写）
+            const newKey = key.charAt(2).toLowerCase() + key.slice(3);
+            column[newKey] = column[key];
+          }
+        });
+      });
+      
       ctx.logger.info(`查询表 ${tableId} 的字段列表成功，共 ${result.length} 个字段`);
       return result;
     } catch (err) {

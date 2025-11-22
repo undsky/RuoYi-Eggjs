@@ -56,25 +56,37 @@ class GenUtils {
       column.htmlType = GenConstants.HTML_DATETIME;
     } else if (GenUtils.arraysContains(GenConstants.COLUMNTYPE_NUMBER, dataType)) {
       column.htmlType = GenConstants.HTML_INPUT;
-      // JavaScript 中统一使用 Number 类型
-      column.javaType = GenConstants.TYPE_INTEGER;
+
+      // 如果是浮点型 统一用BigDecimal
+      const typeInfo = GenUtils.getColumnTypeInfo(column.columnType);
+      if (typeInfo && typeInfo.length === 2 && parseInt(typeInfo[1]) > 0) {
+        column.javaType = GenConstants.TYPE_BIGDECIMAL;
+      }
+      // 如果是整形
+      else if (typeInfo && typeInfo.length === 1 && parseInt(typeInfo[0]) <= 10) {
+        column.javaType = GenConstants.TYPE_INTEGER;
+      }
+      // 长整形
+      else {
+        column.javaType = GenConstants.TYPE_LONG;
+      }
     }
 
     // 插入字段（默认所有字段都需要插入）
     column.isInsert = GenConstants.REQUIRE;
 
     // 编辑字段
-    if (!GenUtils.arraysContains(GenConstants.COLUMNNAME_NOT_EDIT, columnName) && !column.isPk) {
+    if (!GenUtils.arraysContains(GenConstants.COLUMNNAME_NOT_EDIT, columnName) && column.isPk === '0') {
       column.isEdit = GenConstants.REQUIRE;
     }
     
     // 列表字段
-    if (!GenUtils.arraysContains(GenConstants.COLUMNNAME_NOT_LIST, columnName) && !column.isPk) {
+    if (!GenUtils.arraysContains(GenConstants.COLUMNNAME_NOT_LIST, columnName) && column.isPk === '0') {
       column.isList = GenConstants.REQUIRE;
     }
     
     // 查询字段
-    if (!GenUtils.arraysContains(GenConstants.COLUMNNAME_NOT_QUERY, columnName) && !column.isPk) {
+    if (!GenUtils.arraysContains(GenConstants.COLUMNNAME_NOT_QUERY, columnName) && column.isPk === '0') {
       column.isQuery = GenConstants.REQUIRE;
     }
 
@@ -228,6 +240,22 @@ class GenUtils {
       return parseInt(length) || 0;
     }
     return 0;
+  }
+
+  /**
+   * 获取字段类型信息（长度和精度）
+   * @param {string} columnType - 列类型，如 int(11)、decimal(10,2)
+   * @return {array} 类型信息数组，如 ['11'] 或 ['10', '2']
+   */
+  static getColumnTypeInfo(columnType) {
+    if (!columnType) return [];
+    const startIndex = columnType.indexOf('(');
+    const endIndex = columnType.indexOf(')');
+    if (startIndex > 0 && endIndex > startIndex) {
+      const typeInfo = columnType.substring(startIndex + 1, endIndex);
+      return typeInfo.split(',').map(s => s.trim()).filter(s => s);
+    }
+    return [];
   }
 
   /**
