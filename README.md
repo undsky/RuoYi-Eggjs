@@ -139,13 +139,13 @@
 + `/api/monitor/server` - 获取服务器信息 ✅（已完成）
 
 #### 缓存监控
-+ `/api/monitor/cache` - 缓存信息
-+ `/api/monitor/cache/getNames` - 缓存名称列表
-+ `/api/monitor/cache/getKeys/:cacheName` - 缓存键名列表
-+ `/api/monitor/cache/getValue/:cacheName/:cacheKey` - 缓存内容
-+ `/api/monitor/cache/clearCacheName/:cacheName` (DELETE) - 清空缓存名称
-+ `/api/monitor/cache/clearCacheKey/:cacheKey` (DELETE) - 清空缓存键值
-+ `/api/monitor/cache/clearCacheAll` (DELETE) - 清空全部缓存
++ `/api/monitor/cache` - 缓存信息 ✅（已完成）
++ `/api/monitor/cache/getNames` - 缓存名称列表 ✅（已完成）
++ `/api/monitor/cache/getKeys/:cacheName` - 缓存键名列表 ✅（已完成）
++ `/api/monitor/cache/getValue/:cacheName/:cacheKey` - 缓存内容 ✅（已完成）
++ `/api/monitor/cache/clearCacheName/:cacheName` (DELETE) - 清空缓存名称 ✅（已完成）
++ `/api/monitor/cache/clearCacheKey/:cacheKey` (DELETE) - 清空缓存键值 ✅（已完成）
++ `/api/monitor/cache/clearCacheAll` (DELETE) - 清空全部缓存 ✅（已完成）
 
 #### 定时任务监控 ✅（已完成 - 使用 egg-bull）
 

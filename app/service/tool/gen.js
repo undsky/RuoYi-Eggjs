@@ -35,7 +35,7 @@ class GenService extends Service {
     
     try {
       const result = await ctx.helper.getDB(ctx).genTableMapper.selectGenTableList(
-        {},
+        [],
         genTable
       );
       
@@ -44,6 +44,22 @@ class GenService extends Service {
       ctx.logger.error('查询代码生成表列表失败:', err);
       return [];
     }
+  }
+
+  /**
+   * 查询数据库表列表（分页）
+   * @param {object} params - 查询参数
+   * @return {object} { rows, total }
+   */
+  async selectDbTablePage(params = {}) {
+    const { ctx } = this;
+    const mapper = ctx.helper.getDB(ctx).genTableMapper;
+
+    return await ctx.helper.pageQuery(
+      mapper.selectDbTableListMapper([], params),
+      params,
+      mapper.db()
+    );
   }
 
   /**
@@ -56,7 +72,7 @@ class GenService extends Service {
     
     try {
       const result = await ctx.helper.getDB(ctx).genTableMapper.selectDbTableList(
-        {},
+        [],
         genTable
       );
       

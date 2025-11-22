@@ -38,7 +38,7 @@ class GenTableMapperService extends Service {
     }
 
     async selectGenTableList(values, params) {
-        return await this.db().select(this.selectGenTableListMapper(values, params));
+        return await this.db().selects(this.selectGenTableListMapper(values, params));
     }
 
     selectDbTableListMapper(values, params) {
@@ -46,7 +46,7 @@ class GenTableMapperService extends Service {
     }
 
     async selectDbTableList(values, params) {
-        return await this.db().select(this.selectDbTableListMapper(values, params));
+        return await this.db().selects(this.selectDbTableListMapper(values, params));
     }
 
     selectDbTableListByNamesMapper(values, params) {
@@ -54,7 +54,7 @@ class GenTableMapperService extends Service {
     }
 
     async selectDbTableListByNames(values, params) {
-        return await this.db().select(this.selectDbTableListByNamesMapper(values, params));
+        return await this.db().selects(this.selectDbTableListByNamesMapper(values, params));
     }
 
     selectTableByNameMapper(values, params) {
@@ -86,7 +86,7 @@ class GenTableMapperService extends Service {
     }
 
     async selectGenTableAll(values, params) {
-        return await this.db().select(this.selectGenTableAllMapper(values, params));
+        return await this.db().selects(this.selectGenTableAllMapper(values, params));
     }
 
     insertGenTableMapper(values, params) {

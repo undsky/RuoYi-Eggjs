@@ -36,7 +36,7 @@
     "node-schedule": "^2.1.1",
     "ruoyi-eggjs-cache": "^1.1.6",
     "ruoyi-eggjs-mybatis": "^1.1.6",
-    "ruoyi-eggjs-mysql": "^1.1.7",
+    "ruoyi-eggjs-mysql": "^1.1.10",
     "ruoyi-eggjs-ratelimiter": "^1",
     "stream-wormhole": "^2.0.1",
     "trek-captcha": "^0.4.0",

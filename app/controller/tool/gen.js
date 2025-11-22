@@ -27,7 +27,7 @@ module.exports = app => {
         const params = ctx.query;
 
         // 查询列表
-        const result = await service.tool.gentable.selectGenTablePage(params);
+        const result = await service.tool.gen.selectGenTablePage(params);
 
         ctx.body = {
           code: 200,
@@ -56,23 +56,13 @@ module.exports = app => {
       try {
         const params = ctx.query;
         
-        // 分页参数
-        const pageNum = parseInt(params.pageNum) || 1;
-        const pageSize = parseInt(params.pageSize) || 10;
-        
-        // 查询数据库表列表
-        const list = await service.tool.gen.selectDbTableList(params);
-        
-        // 手动分页
-        const total = list.length;
-        const start = (pageNum - 1) * pageSize;
-        const rows = list.slice(start, start + pageSize);
+        // 查询数据库表列表（使用 pageQuery 分页）
+        const result = await service.tool.gen.selectDbTablePage(params);
         
         ctx.body = {
           code: 200,
           msg: '查询成功',
-          rows,
-          total
+          ...result
         };
       } catch (err) {
         ctx.logger.error('查询数据库表列表失败:', err);
