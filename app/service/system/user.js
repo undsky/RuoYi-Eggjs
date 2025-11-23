@@ -5,8 +5,15 @@
  */
 
 const Service = require("egg").Service;
+const { DataScope } = require("../../decorator/dataScope");
 
 class UserService extends Service {
+  /**
+   * 查询用户列表（分页，带数据权限过滤）
+   * @param {object} params - 查询参数
+   * @return {object} 分页结果
+   */
+  @DataScope({ deptAlias: "d", userAlias: "u" })
   async selectUserPage(params = {}) {
     const { ctx } = this;
     const mapper = ctx.helper.getDB(ctx).sysUserMapper;
@@ -18,11 +25,14 @@ class UserService extends Service {
     );
   }
 
+  
+
   /**
-   * 查询用户列表（分页）
+   * 查询用户列表（带数据权限过滤）
    * @param {object} params - 查询参数
-   * @return {object} 用户列表和总数
+   * @return {array} 用户列表
    */
+  @DataScope({ deptAlias: "d", userAlias: "u" })
   async selectUserList(params = {}) {
     const { ctx } = this;
 
@@ -36,7 +46,7 @@ class UserService extends Service {
       params: {
         beginTime: params.beginTime,
         endTime: params.endTime,
-        dataScope: "", // TODO: 实现数据权限过滤
+        dataScope: "", // 由 @DataScope 装饰器自动填充
       },
     };
 

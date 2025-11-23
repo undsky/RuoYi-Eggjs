@@ -530,22 +530,24 @@ module.exports = app => {
         
         // 定义 Excel 列配置
         const columns = [
-          { header: '用户编号', key: 'userId', width: 12 },
-          { header: '用户名称', key: 'userName', width: 15 },
-          { header: '用户昵称', key: 'nickName', width: 15 },
-          { header: '部门名称', key: 'deptName', width: 20 },
+          { header: '用户序号', key: 'userId', width: 12 },
+          { header: '登录名称', key: 'userName', width: 15 },
+          { header: '用户名称', key: 'nickName', width: 15 },
+          { header: '用户邮箱', key: 'email', width: 25 },
           { header: '手机号码', key: 'phonenumber', width: 15 },
           { header: '用户性别', key: 'sexText', width: 10 },
-          { header: '帐号状态', key: 'statusText', width: 10 },
+          { header: '账号状态', key: 'statusText', width: 10 },
           { header: '最后登录IP', key: 'loginIp', width: 15 },
           { header: '最后登录时间', key: 'loginDate', width: 20 },
-          { header: '创建时间', key: 'createTime', width: 20 }
+          { header: '部门名称', key: 'deptName', width: 20 },
+          { header: '部门负责人', key: 'leader', width: 15 }
         ];
         
         // 处理导出数据
         const exportData = list.map(user => ({
           ...user,
           deptName: user.dept ? user.dept.deptName : '',
+          leader: user.dept ? user.dept.leader : '',
           sexText: ExcelUtil.convertDictValue(user.sex, { '0': '男', '1': '女', '2': '未知' }),
           statusText: ExcelUtil.convertDictValue(user.status, { '0': '正常', '1': '停用' })
         }));
