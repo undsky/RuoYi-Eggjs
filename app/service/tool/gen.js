@@ -327,7 +327,7 @@ class GenService extends Service {
       // 更新表信息
       const result = await ctx.helper.getMasterDB(ctx).genTableMapper.updateGenTable([],genTable);
       
-      if (result && result.affectedRows > 0) {
+      if (result > 0) {
         // 更新列信息
         if (genTable.columns && genTable.columns.length > 0) {
           for (const column of genTable.columns) {
@@ -336,7 +336,7 @@ class GenService extends Service {
         }
       }
       
-      return result ? result.affectedRows : 0;
+      return result;
     } catch (err) {
       ctx.logger.error('修改代码生成配置失败:', err);
       throw new Error('修改失败：' + err.message);
