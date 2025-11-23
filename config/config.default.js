@@ -162,19 +162,17 @@ module.exports = (appInfo) => {
 
   // 日志轮转配置（防止日志文件过大）
   config.logrotator = {
-    // 按文件大小轮转
+    // 按文件大小轮转（推荐方式，避免产生过多小文件）
     filesRotateBySize: [
       path.join(appInfo.root, 'logs', appInfo.name, 'common-error.log'),
       path.join(appInfo.root, 'logs', appInfo.name, 'egg-agent.log'),
       path.join(appInfo.root, 'logs', appInfo.name, 'egg-web.log'),
+      path.join(appInfo.root, 'logs', appInfo.name, appInfo.name + '-web.log'), // 改为按大小轮转
     ],
     maxFileSize: 50 * 1024 * 1024, // 单个日志文件最大 50MB
-    maxFiles: 10, // 最多保留 10 个备份文件
-    // 按小时轮转（也可以选择按天）
-    filesRotateByHour: [
-      path.join(appInfo.root, 'logs', appInfo.name, appInfo.name + '-web.log'),
-    ],
+    maxFiles: 10, // 最多保留 10 个备份文件（总计最多 500MB）
     maxDays: 7, // 日志保留 7 天
+    // 注意：不再使用 filesRotateByHour，避免产生过多文件（168个/周）
   };
 
   // 基础日志配置
