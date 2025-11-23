@@ -57,9 +57,6 @@ class OnlineService extends Service {
   async forceLogout(tokenId) {
     const { app } = this;
     
-    // 参照 Spring Boot 版本：
-    // redisCache.deleteObject(CacheConstants.LOGIN_TOKEN_KEY + tokenId);
-    
     // 删除登录 Token 缓存（这是主要逻辑）
     const loginTokenKey = CacheConstants.LOGIN_TOKEN_KEY + tokenId;
     await app.cache.default.del(loginTokenKey);

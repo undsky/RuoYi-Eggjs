@@ -14,7 +14,7 @@ module.exports = (app) => {
   class LoginController extends Controller {
     /**
      * 用户登录
-     * POST /api/login
+     * POST /login
      * 说明：公开接口，无需权限验证
      */
     @HttpPost("/login")
@@ -77,7 +77,7 @@ module.exports = (app) => {
 
     /**
      * 用户登出
-     * POST /api/logout
+     * POST /logout
      * 说明：需要登录，无需特殊权限
      */
     @HttpPost("/logout")
@@ -112,7 +112,7 @@ module.exports = (app) => {
 
     /**
      * 获取用户信息
-     * GET /api/getInfo
+     * GET /getInfo
      * 说明：需要登录，无需特殊权限
      */
     @HttpGet("/getInfo")
@@ -238,7 +238,7 @@ module.exports = (app) => {
 
     /**
      * 获取路由菜单
-     * GET /api/getRouters
+     * GET /getRouters
      * 说明：需要登录，无需特殊权限
      */
     @HttpGet("/getRouters")
@@ -267,7 +267,7 @@ module.exports = (app) => {
 
     /**
      * 用户注册
-     * POST /api/register
+     * POST /register
      * 说明：公开接口，无需权限验证
      */
     @HttpPost("/register")
@@ -321,7 +321,7 @@ module.exports = (app) => {
 
     /**
      * 获取验证码
-     * GET /api/captchaImage
+     * GET /captchaImage
      * 说明：公开接口，无需权限验证
      */
     @HttpGet("/captchaImage")

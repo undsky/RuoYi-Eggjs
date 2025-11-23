@@ -91,10 +91,6 @@ module.exports = app => {
         // 查询用户的岗位ID列表
         const postIds = await service.system.post.selectPostListByUserId(parseInt(userId));
         
-        // 查询用户的角色ID列表
-        // const userRoles = user.roles || [];
-        // const roleIds = userRoles.map(r => r.roleId);
-        
         // 查询所有角色和岗位
         const roles = await service.system.role.selectRoleAll();
         const posts = await service.system.post.selectPostAll();
