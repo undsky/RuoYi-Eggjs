@@ -160,5 +160,14 @@ module.exports = (appInfo) => {
     readWriteSplit: false, // 是否启用读写分离
   };
 
+  // 日志配置优化
+  config.logger = {
+    level: "INFO", // 日志级别：DEBUG, INFO, WARN, ERROR, NONE
+    consoleLevel: "INFO", // 控制台日志级别
+    disableConsoleAfterReady: false, // 默认不禁用控制台
+    outputJSON: false, // 不输出 JSON 格式
+    buffer: true, // 启用日志缓冲
+  };
+
   return config;
 };

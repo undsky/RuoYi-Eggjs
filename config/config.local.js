@@ -61,5 +61,14 @@ module.exports = (appInfo) => {
     },
   };
 
+  // 本地开发环境日志配置
+  config.logger = {
+    level: "INFO", // 开发环境使用 INFO 级别
+    consoleLevel: "WARN", // 控制台只显示警告及以上级别
+    disableConsoleAfterReady: false, // 开发环境保留控制台日志
+    outputJSON: false,
+    buffer: true,
+  };
+
   return config;
 };

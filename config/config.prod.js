@@ -73,5 +73,14 @@ module.exports = (appInfo) => {
     },
   };
 
+  // 生产环境日志配置
+  config.logger = {
+    level: "INFO", // 生产环境使用 INFO 级别
+    consoleLevel: "NONE", // 禁用控制台日志输出
+    disableConsoleAfterReady: true,
+    outputJSON: false,
+    buffer: true,
+  };
+
   return config;
 };
