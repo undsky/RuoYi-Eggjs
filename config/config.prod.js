@@ -78,8 +78,13 @@ module.exports = (appInfo) => {
     level: "INFO", // 生产环境使用 INFO 级别
     consoleLevel: "NONE", // 禁用控制台日志输出
     disableConsoleAfterReady: true,
-    outputJSON: false,
-    buffer: true,
+  };
+
+  // 生产环境日志轮转优化
+  config.logrotator = {
+    maxFileSize: 100 * 1024 * 1024, // 生产环境单文件最大 100MB
+    maxFiles: 30, // 保留更多备份（30个）
+    maxDays: 30, // 日志保留 30 天
   };
 
   return config;

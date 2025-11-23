@@ -61,13 +61,18 @@ module.exports = (appInfo) => {
     },
   };
 
-  // 本地开发环境日志配置
+  // 本地开发环境日志配置（只记录错误日志）
   config.logger = {
-    level: "INFO", // 开发环境使用 INFO 级别
-    consoleLevel: "WARN", // 控制台只显示警告及以上级别
-    disableConsoleAfterReady: false, // 开发环境保留控制台日志
-    outputJSON: false,
-    buffer: true,
+    level: "ERROR", // 只记录 ERROR 级别到文件
+    consoleLevel: "INFO", // 控制台使用 INFO 级别
+    disableConsoleAfterReady: false, // 保持控制台输出
+  };
+
+  // 本地环境日志轮转（仅针对错误日志）
+  config.logrotator = {
+    maxFileSize: 10 * 1024 * 1024, // 错误日志最大 10MB
+    maxFiles: 5, // 保留 5 个备份
+    maxDays: 7, // 保留 7 天
   };
 
   return config;

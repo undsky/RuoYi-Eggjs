@@ -160,13 +160,32 @@ module.exports = (appInfo) => {
     readWriteSplit: false, // 是否启用读写分离
   };
 
-  // 日志配置优化
+  // 日志轮转配置（防止日志文件过大）
+  config.logrotator = {
+    // 按文件大小轮转
+    filesRotateBySize: [
+      path.join(appInfo.root, 'logs', appInfo.name, 'common-error.log'),
+      path.join(appInfo.root, 'logs', appInfo.name, 'egg-agent.log'),
+      path.join(appInfo.root, 'logs', appInfo.name, 'egg-web.log'),
+    ],
+    maxFileSize: 50 * 1024 * 1024, // 单个日志文件最大 50MB
+    maxFiles: 10, // 最多保留 10 个备份文件
+    // 按小时轮转（也可以选择按天）
+    filesRotateByHour: [
+      path.join(appInfo.root, 'logs', appInfo.name, appInfo.name + '-web.log'),
+    ],
+    maxDays: 7, // 日志保留 7 天
+  };
+
+  // 基础日志配置
   config.logger = {
-    level: "INFO", // 日志级别：DEBUG, INFO, WARN, ERROR, NONE
-    consoleLevel: "INFO", // 控制台日志级别
-    disableConsoleAfterReady: false, // 默认不禁用控制台
-    outputJSON: false, // 不输出 JSON 格式
-    buffer: true, // 启用日志缓冲
+    level: 'INFO',
+    consoleLevel: 'INFO',
+    dir: path.join(appInfo.root, 'logs', appInfo.name),
+    // 错误日志单独配置
+    errorLogName: 'common-error.log',
+    // 禁用日志字段缓存（避免日志信息不完整）
+    buffer: true,
   };
 
   return config;

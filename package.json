@@ -35,7 +35,7 @@
     "nanoid": "^3.3.7",
     "node-schedule": "^2.1.1",
     "ruoyi-eggjs-cache": "^1.1.6",
-    "ruoyi-eggjs-mybatis": "^1.1.10",
+    "ruoyi-eggjs-mybatis": "^1.1.11",
     "ruoyi-eggjs-mysql": "^1.1.11",
     "ruoyi-eggjs-ratelimiter": "^1",
     "stream-wormhole": "^2.0.1",
