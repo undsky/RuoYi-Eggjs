@@ -154,8 +154,8 @@ class JobService extends Service {
       // 插入数据库
       const result = await mapper.insertJob([], job);
 
-      if (result.affectedRows > 0 && result.insertId) {
-        job.jobId = result.insertId;
+      if (result > 0) {
+        job.jobId = result;
 
         // 使用 Bull 创建定时任务调度（如果状态为正常）
         if (job.status === "0") {
@@ -163,7 +163,7 @@ class JobService extends Service {
         }
       }
 
-      return result.affectedRows;
+      return result;
     } catch (err) {
       ctx.logger.error("新增定时任务失败:", err);
       throw err;
@@ -228,7 +228,7 @@ class JobService extends Service {
       }
 
       // 删除数据库记录
-      const result = await mapper.deleteJobByIds([jobIds]);
+      const result = await mapper.deleteJobByIds([], { array: jobIds });
 
       // 使用 Bull 删除任务调度
       for (const job of jobs) {
@@ -266,7 +266,7 @@ class JobService extends Service {
       fullJob.updateTime = ctx.helper.formatDate(new Date());
 
       // 更新数据库
-      const result = await mapper.updateJob([],fullJob);
+      const result = await mapper.updateJob([], fullJob);
 
       if (result > 0) {
         // 使用 Bull 根据状态启动或暂停任务
@@ -491,8 +491,10 @@ class JobService extends Service {
       // 使用 jobId + invokeTarget 作为唯一标识
       const uniqueId = `${job.jobId}:${job.invokeTarget}`;
 
-      ctx.logger.info(`[Bull] 准备创建任务 ${job.jobName}, uniqueId: ${uniqueId}, cron: ${job.cronExpression}`);
-      
+      ctx.logger.info(
+        `[Bull] 准备创建任务 ${job.jobName}, uniqueId: ${uniqueId}, cron: ${job.cronExpression}`
+      );
+
       // 先尝试删除旧的重复任务（避免重复）
       // 使用 removeRepeatable 方法，通过 cron + key 精确匹配
       try {
@@ -549,7 +551,9 @@ class JobService extends Service {
         }
       );
 
-      ctx.logger.info(`[Bull] 创建定时任务成功: ${job.jobName} (${job.cronExpression})`);
+      ctx.logger.info(
+        `[Bull] 创建定时任务成功: ${job.jobName} (${job.cronExpression})`
+      );
       return true;
     } catch (err) {
       ctx.logger.error(`[Bull] 创建定时任务失败: ${job.jobName}`, err);
@@ -567,7 +571,9 @@ class JobService extends Service {
 
     try {
       // 删除旧任务
-      await this.deleteBullJob(oldJob);
+      if (oldJob) {
+        await this.deleteBullJob(oldJob);
+      }
 
       // 如果新任务状态为正常，创建新任务
       if (newJob.status === "0") {
@@ -594,15 +600,19 @@ class JobService extends Service {
 
       // 获取所有重复任务
       const repeatableJobs = await app.queue.ryTask.getRepeatableJobs();
-      
-      ctx.logger.info(`[Bull] 查找要删除的任务: ${job.jobName}, uniqueId: ${uniqueId}`);
+
+      ctx.logger.info(
+        `[Bull] 查找要删除的任务: ${job.jobName}, uniqueId: ${uniqueId}`
+      );
       ctx.logger.info(`[Bull] 当前重复任务数量: ${repeatableJobs.length}`);
 
       let deleted = false;
       // 通过 uniqueId 匹配删除（新格式）
       for (const repeatJob of repeatableJobs) {
         if (repeatJob.key && repeatJob.key.includes(uniqueId)) {
-          ctx.logger.info(`[Bull] 找到匹配任务（新格式），准备删除: ${repeatJob.key}`);
+          ctx.logger.info(
+            `[Bull] 找到匹配任务（新格式），准备删除: ${repeatJob.key}`
+          );
           await app.queue.ryTask.removeRepeatableByKey(repeatJob.key);
           ctx.logger.info(`[Bull] 删除定时任务成功: ${job.jobName}`);
           deleted = true;
@@ -612,10 +622,14 @@ class JobService extends Service {
 
       // 如果没找到，尝试用 cron 表达式匹配（兼容旧格式）
       if (!deleted) {
-        ctx.logger.info(`[Bull] 未找到新格式任务，尝试匹配旧格式 (cron: ${job.cronExpression})`);
+        ctx.logger.info(
+          `[Bull] 未找到新格式任务，尝试匹配旧格式 (cron: ${job.cronExpression})`
+        );
         for (const repeatJob of repeatableJobs) {
           if (repeatJob.cron === job.cronExpression) {
-            ctx.logger.info(`[Bull] 找到匹配任务（旧格式），准备删除: ${repeatJob.key}`);
+            ctx.logger.info(
+              `[Bull] 找到匹配任务（旧格式），准备删除: ${repeatJob.key}`
+            );
             await app.queue.ryTask.removeRepeatableByKey(repeatJob.key);
             ctx.logger.info(`[Bull] 删除定时任务成功: ${job.jobName}`);
             deleted = true;
@@ -625,11 +639,13 @@ class JobService extends Service {
       }
 
       if (!deleted) {
-        ctx.logger.warn(`[Bull] 未找到要删除的任务: ${job.jobName}, uniqueId: ${uniqueId}, cron: ${job.cronExpression}`);
+        ctx.logger.warn(
+          `[Bull] 未找到要删除的任务: ${job.jobName}, uniqueId: ${uniqueId}, cron: ${job.cronExpression}`
+        );
         // 输出所有 repeat job keys 用于调试
         if (repeatableJobs.length > 0) {
           ctx.logger.info(`[Bull] 现有任务列表 (${repeatableJobs.length}):`);
-          repeatableJobs.forEach(rj => {
+          repeatableJobs.forEach((rj) => {
             ctx.logger.info(`  - key: ${rj.key}, cron: ${rj.cron}`);
           });
         } else {

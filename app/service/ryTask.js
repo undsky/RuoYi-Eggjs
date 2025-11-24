@@ -1,19 +1,14 @@
 /**
- * 定时任务示例
+ * 定时任务
  * @Author: 姜彦汐
  * @Date: 2025-11-08
- * 
- * 使用说明：
- * 1. 这个文件演示了如何创建定时任务
- * 2. 实际项目中，建议将定时任务放在 app/schedule 目录
- * 3. 任务可以通过数据库配置动态调度
  */
 
 const { Service } = require('egg');
 
 class RyTask extends Service {
   /**
-   * 无参数任务示例
+   * 无参数任务
    */
   async ryNoParams() {
     const { ctx } = this;
@@ -26,7 +21,7 @@ class RyTask extends Service {
   }
 
   /**
-   * 单参数任务示例
+   * 单参数任务
    * @param {string} params - 参数
    */
   async ryParams(params) {
@@ -40,7 +35,7 @@ class RyTask extends Service {
   }
 
   /**
-   * 多参数任务示例
+   * 多参数任务
    * @param {string} s - 字符串参数
    * @param {boolean} b - 布尔参数
    * @param {number} l - 长整型参数
