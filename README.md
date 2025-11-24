@@ -6,11 +6,11 @@
 [![Node](https://img.shields.io/badge/node-%3E%3D20.0.0-brightgreen.svg)](https://nodejs.org)
 [![Egg](https://img.shields.io/badge/egg-%5E3-blue.svg)](https://eggjs.org)
 
-基于 Egg.js 框架开发的企业级后台管理系统，100% 实现若依（RuoYi-Vue）系统功能。采用 MyBatis XML 风格编写 SQL，完全复用若依原有的数据库结构和 MyBatis XML 映射文件，实现从 Java 到 Node.js 的无缝迁移。
+基于 Egg.js 框架开发的企业级后台管理系统，100% 实现若依（RuoYi-Vue）系统功能。采用 MyBatis XML 风格编写 SQL，完全复用若依原有的数据库结构和 MyBatis XML 映射文件。
 
 ## 前端项目
 
-本项目是后端服务，可无缝对接若依官方 Vue3 前端项目：
+可无缝对接若依官方 Vue3 前端项目：
 
 - **RuoYi-Vue3**: [https://gitcode.com/yangzongzhuan/RuoYi-Vue3](https://gitcode.com/yangzongzhuan/RuoYi-Vue3)
 - 完全兼容若依前端所有功能
@@ -33,14 +33,13 @@ const baseUrl = 'http://localhost:7001' // 后端接口
 - 🔌 **多数据库支持** - 支持 MySQL、PostgreSQL、SQLite 等多种数据库，支持多数据源配置（[MySQL](https://github.com/undsky/ruoyi-eggjs-mysql) | [PostgreSQL](https://github.com/undsky/ruoyi-eggjs-pgsql) | [SQLite](https://github.com/undsky/ruoyi-eggjs-sqlite)）
 - 🤖 **代码自动生成** - 基于 XML Mapper 自动生成 Service 层代码（[文档](https://github.com/undsky/ruoyi-eggjs-cli)）
 - 🌐 **内网穿透** - 内置 FRP 客户端，快速将本地服务暴露到公网（[文档](https://github.com/undsky/ruoyi-eggjs-cli#frp-内网穿透)）
-- 📝 **文件模版** - 使用 VSCode 插件快速生成代码模板（[文档](https://marketplace.visualstudio.com/items?itemName=qiu8310.dot-template-vscode)）
 - 🎯 **路由注解** - 使用装饰器定义路由，简洁优雅（[文档](https://github.com/fyl080801/egg-decorator-router)）
-- ⏰ **定时任务调度** - 基于 egg-bull 实现动态定时任务，支持从数据库读取 cron 表达式、手动执行、失败重试、分布式支持、任务日志记录和可视化监控
-- 🔐 **JWT 认证** - 基于 JWT 的用户认证和权限控制
-- 🔒 **权限控制** - 类似 Spring Boot `@PreAuthorize` 的权限装饰器，支持通配符、AND/OR 逻辑
-- 💡 **IDE 智能提示**  - 完整的 TypeScript 类型定义，支持代码跳转、智能提示和参数提示
+- ⏰ **定时任务调度** - 基于 egg-bull 实现动态定时任务，支持从数据库读取 cron 表达式、手动执行、失败重试、分布式支持、任务日志记录和可视化监控（[文档](https://github.com/brickyang/egg-bull)）
 - 🚀 **缓存支持** - 多层级缓存策略（内存、文件、Redis）（[文档](https://github.com/undsky/ruoyi-eggjs-cache)）
 - 🛡️ **限流保护** - API 请求频率限制，防止恶意攻击（[文档](https://github.com/undsky/ruoyi-eggjs-ratelimiter)）
+- 🔐 **JWT 认证** - 基于 JWT 的用户认证和权限控制（[文档](https://github.com/okoala/egg-jwt)）
+- 🔒 **权限控制** - 类似 Spring Boot `@PreAuthorize` 的权限装饰器，支持通配符、AND/OR 逻辑
+- 💡 **IDE 智能提示**  - 完整的 TypeScript 类型定义，支持代码跳转、智能提示和参数提示
 
 ### 技术栈
 
@@ -170,59 +169,30 @@ CREATE DATABASE IF NOT EXISTS ruoyi DEFAULT CHARSET utf8mb4 COLLATE utf8mb4_gene
 -- SQL 脚本位于项目 sql/ 文件夹下
 ```
 
-### 4. 配置数据库
-
-创建或修改 `config/config.local.js`：
+### 4. 配置数据库和 Redis
 
 ```javascript
 // config/config.local.js
-const path = require('path');
 
-module.exports = appInfo => {
-  const config = {};
-
-  // MySQL 数据库配置
-  config.mysql = {
-    default: {
-      port: 3306,
-      charset: 'utf8mb4',
-      multipleStatements: true,
-      connectionLimit: 100,
-    },
+config.mysql = {
+    // 启用驼峰命名转换：数据库字段 user_name -> userName
+    camelCase: true,
     clients: {
       ruoyi: {
-        host: '127.0.0.1',
-        user: 'root',
-        password: 'your_password',  // 修改为你的密码
-        database: 'ruoyi',
+        host: "127.0.0.1",
+        user: "root",
+        password: "jyx123",
+        database: "ruoyi",
       },
     },
   };
 
-  // 缓存配置（使用 Redis）
-  config.cache = {
-    redis: {
-      host: '127.0.0.1',
-      port: 6379,
-      password: '',
-      db: 0,
-    },
+  const redis = {
+    port: 6379,
+    host: "127.0.0.1",
+    password: "",
+    db: 5,
   };
-
-  // 限流配置（使用 Redis）
-  config.ratelimiter = {
-    points: 100,
-    duration: 60,
-    redis: {
-      host: '127.0.0.1',
-      port: 6379,
-      password: '',
-      db: 0,
-    },
-  };
-
-  return config;
-};
 ```
 
 ### 5. 运行项目
@@ -245,236 +215,9 @@ npm start
 npm stop
 ```
 
-### 6. 访问应用
-
-打开浏览器访问：[http://localhost:7001](http://localhost:7001)
-
-测试接口：
-- 版本信息：`GET http://localhost:7001/version`
 
 
-## ⚙️ 配置说明
-
-### 核心配置
-
-#### JWT 认证配置
-
-```javascript
-// config/config.default.js
-config.jwt = {
-  enable: true,
-  match: /^\/api[\/]?((?!version|auth).)*$/i,  // 需要验证的路由
-  secret: 'z2Em*CpGBZDw+',  // 密钥（生产环境务必修改）
-  expiresIn: '7d',  // 过期时间
-  getToken(ctx) {
-    // 从 Header 或 Query 获取 Token
-    const authorization = ctx.headers.authorization;
-    if (authorization) {
-      const [pre, token] = authorization.split(' ');
-      if ('Bearer' == pre || 'Token' == pre) {
-        return token;
-      }
-    }
-    return ctx.request.body.token || ctx.query.token;
-  },
-  isRevoked: async (ctx, payload) => {
-    // 检查 Token 是否被撤销
-    return 'revoked' == await ctx.app.cache.default.get(payload.jti);
-  },
-};
-```
-
-#### CORS 跨域配置
-
-```javascript
-config.cors = {
-  allowMethods: 'GET,POST',
-  credentials: true,
-  origin: '*',  // 生产环境建议配置具体域名
-};
-```
-
-#### 文件上传配置
-
-```javascript
-config.multipart = {
-  fileSize: '100mb',  // 单文件大小限制
-  files: 10,          // 同时上传文件数量
-  whitelist: [
-    '.jpg', '.jpeg', '.png', '.gif',
-    '.doc', '.docx', '.xls', '.xlsx',
-    '.pdf', '.txt', '.zip',
-  ],
-};
-```
-
-## 🔧 核心功能
-
-### 1. MyBatis XML SQL 映射
-
-在 `mapper` 目录下编写 XML 映射文件：
-
-```xml
-<!-- mapper/mysql/ruoyi/SysUserMapper.xml -->
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="mapper/mysql/ruoyi/SysUserMapper.xml">
-    
-    <select id="selectUserList">
-        SELECT * FROM sys_user
-        <where>
-            <if test="userName">
-                AND user_name LIKE '%${userName}%'
-            </if>
-        </where>
-        ORDER BY create_time DESC
-        LIMIT ?, ?
-    </select>
-    
-</mapper>
-```
-
-### 2. 自动生成 Service 代码
-
-运行代码生成器：
-
-```bash
-npm run mapper
-```
-
-会自动生成 `app/service/db/mysql/ruoyi/SysUserMapper.js`：
-
-```javascript
-class SysUserMapperService extends Service {
-    async selectUserList(values, params) {
-        return await this.db().select(this.selectUserListMapper(values, params));
-    }
-}
-```
-
-### 3. 路由注解
-
-使用装饰器定义路由：
-
-```javascript
-const { Route, HttpGet, HttpPost } = require('egg-decorator-router');
-
-@Route('/user')
-class UserController extends Controller {
-  
-  @HttpPost('/list')
-  async list() {
-    const { ctx } = this;
-    const users = await ctx.service.db.mysql.ruoyi.sysUserMapper.selectUserList(
-      ctx.helper.page(ctx.request.body),
-      ctx.request.body
-    );
-    ctx.body = users;
-  }
-
-  @HttpGet('/:id')
-  async info() {
-    const { ctx } = this;
-    const user = await ctx.service.db.mysql.ruoyi.sysUserMapper.selectUserById(
-      [ctx.params.id]
-    );
-    ctx.body = user;
-  }
-}
-```
-
-### 4. 缓存使用
-
-```javascript
-// 在 Service 中使用缓存
-async getUserById(userId) {
-  const { app } = this;
-  
-  return await app.cache.default.wrap(`user:${userId}`, async () => {
-    // 缓存不存在时执行此函数
-    return await this.service.db.mysql.ruoyi.sysUserMapper.selectUserById([userId]);
-  }, { ttl: 600 });  // 缓存 10 分钟
-}
-```
-
-### 5. 统一响应格式
-
-所有 API 响应会自动格式化为：
-
-```json
-{
-  "code": 200,
-  "msg": "",
-  "data": {
-    // 业务数据
-  }
-}
-```
-
-### 6. FRP 内网穿透
-
-使用 `ruoyi-eggjs-cli` 的 FRP 功能可以将本地服务快速暴露到公网，方便开发和测试：
-
-```bash
-# 安装 ruoyi-eggjs-cli（如果还未安装）
-npm install -g ruoyi-eggjs-cli
-
-# 使用 FRP 内网穿透（所有参数必填）
-rec frp 127.0.0.1:7001 -saddr frp.example.com -sport 39998 -auth your_token
-
-# 指定本地端口（IP 默认为 127.0.0.1）
-rec frp 7001 -saddr frp.example.com -sport 39998 -auth your_token
-
-# 指定自定义域名（可选）
-rec frp 127.0.0.1:7001 -saddr frp.example.com -sport 39998 -auth your_token -cdomain myapp.example.com
-```
-
-**参数说明：**
-
-| 参数 | 说明 | 是否必填 |
-| --- | --- | --- |
-| `localURL` | 本地服务地址，格式：`IP:PORT` 或 `PORT` | 必填 |
-| `-saddr, --serverAddr` | FRP 服务端地址 | 必填 |
-| `-sport, --serverPort` | FRP 服务端端口 | 必填 |
-| `-auth, --authToken` | 身份验证令牌 | 必填 |
-| `-cdomain, --customDomains` | 自定义域名 | 可选 |
-
-**使用场景：**
-
-- 本地开发时，需要让远程客户端访问本地服务
-- 微信小程序开发，需要 HTTPS 域名进行调试
-- 临时分享本地服务给团队成员测试
-- 内网穿透，访问内网服务
-
-更多详情请参考：[ruoyi-eggjs-cli FRP 功能文档](https://github.com/undsky/ruoyi-eggjs-cli#frp-内网穿透)
-
-## 📝 开发指南
-
-### 开发工作流
-
-1. **编写 XML Mapper**
-   ```bash
-   # 在 mapper/mysql/ruoyi/ 目录下创建或修改 XML 文件
-   ```
-
-2. **自动生成 Service**
-   ```bash
-   # 开发模式会自动监听 XML 变化并生成代码
-   npm run dev
-   ```
-
-3. **编写 Controller**
-   ```javascript
-   // 使用生成的 Service
-   await ctx.service.db.mysql.ruoyi.xxxMapper.methodName(values, params);
-   ```
-
-4. **测试接口**
-   ```bash
-   # 使用 Postman 或 curl 测试
-   ```
-
-### 命令说明
+#### 命令说明
 
 ```bash
 # 开发模式（自动生成 Mapper + 调试）
@@ -493,13 +236,12 @@ npm start
 npm stop
 ```
 
-### 目录规范
+### 6. 访问应用
 
-- **Controller**：`app/controller/**/*.js` - API 控制器
-- **Service**：`app/service/*.js` - 业务逻辑
-- **Middleware**：`app/middleware/*.js` - 中间件
-- **Mapper**：`mapper/mysql/数据库名/*.xml` - SQL 映射文件
-- **自动生成**：`app/service/db/mysql/数据库名/*.js` - 自动生成的 Service
+打开浏览器访问：[http://localhost:7001](http://localhost:7001)
+
+测试接口：
+- 版本信息：`GET http://localhost:7001/version`
 
 ## 🚢 部署说明
 
