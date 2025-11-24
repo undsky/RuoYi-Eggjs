@@ -33,9 +33,9 @@ module.exports = (appInfo) => {
   };
 
   config.accessControl = {
-    // 精确匹配：排除 /version、/login、/register、/captchaImage 和根路径 /
+    // 精确匹配：排除 /version、/login、/register、/captchaImage、/druid/login.html 和根路径 /
     // 其他路径都需要 JWT 验证
-    match: /^\/(?!(?:version|login|register|captchaImage)(?:\/|$))(?!$)/i,
+    match: /^\/(?!(?:version|login|register|captchaImage|druid\/login\.html)(?:\/|$))(?!$)/i,
   };
 
   config.jwt = {
