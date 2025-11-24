@@ -68,12 +68,5 @@ module.exports = (appInfo) => {
     disableConsoleAfterReady: false, // 保持控制台输出
   };
 
-  // 本地环境日志轮转（仅针对错误日志）
-  config.logrotator = {
-    maxFileSize: 10 * 1024 * 1024, // 错误日志最大 10MB
-    maxFiles: 5, // 保留 5 个备份
-    maxDays: 7, // 保留 7 天
-  };
-
   return config;
 };

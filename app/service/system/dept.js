@@ -274,7 +274,7 @@ class DeptService extends Service {
       return;
     }
 
-    const userId = ctx.state.user?.userId;
+    const userId = ctx.state.user && ctx.state.user.userId;
     
     // 管理员拥有所有数据权限
     if (ctx.helper.isAdmin(userId)) {

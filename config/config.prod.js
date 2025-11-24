@@ -75,16 +75,9 @@ module.exports = (appInfo) => {
 
   // 生产环境日志配置
   config.logger = {
-    level: "WARN", // 改为 WARN 级别，减少日志量（只记录警告和错误）
+    level: "ERROR", // 改为 ERROR 级别，减少日志量（只记录错误）
     consoleLevel: "NONE", // 禁用控制台日志输出
     disableConsoleAfterReady: true,
-  };
-
-  // 生产环境日志轮转优化（减少磁盘占用）
-  config.logrotator = {
-    maxFileSize: 50 * 1024 * 1024, // 单文件最大 50MB（从 100MB 降低）
-    maxFiles: 10, // 保留 10 个备份（从 30 降低，最多 500MB）
-    maxDays: 7, // 日志保留 7 天（从 30 降低）
   };
 
   return config;
