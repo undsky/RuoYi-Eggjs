@@ -271,25 +271,8 @@ npm stop
 
 ### 使用 PM2 部署
 
-```bash
-# 安装 PM2
-npm install -g pm2
-
-# 启动
-pm2 start npm --name ruoyi-eggjs -- start
-
-# 查看状态
-pm2 status
-
-# 查看日志
-pm2 logs ruoyi-eggjs
-
-# 停止
-pm2 stop ruoyi-eggjs
-
-# 重启
-pm2 restart ruoyi-eggjs
-```
+参考
+[如何使用 PM2 启动应用](https://eggjs.org/zh-CN/community/faq#%E8%BF%9B%E7%A8%8B%E7%AE%A1%E7%90%86%E4%B8%BA%E4%BB%80%E4%B9%88%E6%B2%A1%E6%9C%89%E9%80%89%E5%9E%8B-pm2)
 
 ### Nginx 反向代理
 
@@ -298,13 +281,27 @@ server {
     listen 80;
     server_name your-domain.com;
 
+    # 前端项目
     location / {
-        proxy_pass http://127.0.0.1:7001;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-    }
+			root   /www/wwwroot/项目目录;
+			try_files $uri $uri/ /index.html;
+            index  index.html index.htm;
+        }
+
+# 后端接口
+    location /prod-api/ {
+            proxy_set_header Host $http_host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header REMOTE-HOST $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_pass http://localhost:项目运行端口/;
+            # ai stream
+            proxy_buffering off;
+            proxy_cache off;
+            proxy_set_header Connection '';
+            proxy_http_version 1.1;
+            chunked_transfer_encoding off;
+        }
 }
 ```
 
