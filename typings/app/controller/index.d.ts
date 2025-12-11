@@ -6,6 +6,7 @@ import 'egg';
 import ExportCommon = require('../../../app/controller/common');
 import ExportIndex = require('../../../app/controller/index');
 import ExportMonitorCache = require('../../../app/controller/monitor/cache');
+import ExportMonitorDruid = require('../../../app/controller/monitor/druid');
 import ExportMonitorJob = require('../../../app/controller/monitor/job');
 import ExportMonitorJobLog = require('../../../app/controller/monitor/jobLog');
 import ExportMonitorLogininfor = require('../../../app/controller/monitor/logininfor');
@@ -31,6 +32,7 @@ declare module 'egg' {
     index: ExportIndex;
     monitor: {
       cache: ExportMonitorCache;
+      druid: ExportMonitorDruid;
       job: ExportMonitorJob;
       jobLog: ExportMonitorJobLog;
       logininfor: ExportMonitorLogininfor;

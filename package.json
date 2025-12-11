@@ -38,6 +38,7 @@
     "ruoyi-eggjs-mybatis": "^1.1.13",
     "ruoyi-eggjs-mysql": "^1.1.15",
     "ruoyi-eggjs-ratelimiter": "^1",
+    "ruoyi-eggjs-sqlite": "^1.1.9",
     "stream-wormhole": "^2.0.1",
     "trek-captcha": "^0.4.0",
     "velocityjs": "^2.1.5",

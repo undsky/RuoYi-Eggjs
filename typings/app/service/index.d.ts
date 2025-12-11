@@ -47,6 +47,25 @@ import ExportDbMysqlRuoyiSysRoleMenuMapper = require('../../../app/service/db/my
 import ExportDbMysqlRuoyiSysUserMapper = require('../../../app/service/db/mysql/ruoyi/SysUserMapper');
 import ExportDbMysqlRuoyiSysUserPostMapper = require('../../../app/service/db/mysql/ruoyi/SysUserPostMapper');
 import ExportDbMysqlRuoyiSysUserRoleMapper = require('../../../app/service/db/mysql/ruoyi/SysUserRoleMapper');
+import ExportDbSqliteRuoyiGenTableColumnMapper = require('../../../app/service/db/sqlite/ruoyi/GenTableColumnMapper');
+import ExportDbSqliteRuoyiGenTableMapper = require('../../../app/service/db/sqlite/ruoyi/GenTableMapper');
+import ExportDbSqliteRuoyiSysConfigMapper = require('../../../app/service/db/sqlite/ruoyi/SysConfigMapper');
+import ExportDbSqliteRuoyiSysDeptMapper = require('../../../app/service/db/sqlite/ruoyi/SysDeptMapper');
+import ExportDbSqliteRuoyiSysDictDataMapper = require('../../../app/service/db/sqlite/ruoyi/SysDictDataMapper');
+import ExportDbSqliteRuoyiSysDictTypeMapper = require('../../../app/service/db/sqlite/ruoyi/SysDictTypeMapper');
+import ExportDbSqliteRuoyiSysJobLogMapper = require('../../../app/service/db/sqlite/ruoyi/SysJobLogMapper');
+import ExportDbSqliteRuoyiSysJobMapper = require('../../../app/service/db/sqlite/ruoyi/SysJobMapper');
+import ExportDbSqliteRuoyiSysLogininforMapper = require('../../../app/service/db/sqlite/ruoyi/SysLogininforMapper');
+import ExportDbSqliteRuoyiSysMenuMapper = require('../../../app/service/db/sqlite/ruoyi/SysMenuMapper');
+import ExportDbSqliteRuoyiSysNoticeMapper = require('../../../app/service/db/sqlite/ruoyi/SysNoticeMapper');
+import ExportDbSqliteRuoyiSysOperLogMapper = require('../../../app/service/db/sqlite/ruoyi/SysOperLogMapper');
+import ExportDbSqliteRuoyiSysPostMapper = require('../../../app/service/db/sqlite/ruoyi/SysPostMapper');
+import ExportDbSqliteRuoyiSysRoleDeptMapper = require('../../../app/service/db/sqlite/ruoyi/SysRoleDeptMapper');
+import ExportDbSqliteRuoyiSysRoleMapper = require('../../../app/service/db/sqlite/ruoyi/SysRoleMapper');
+import ExportDbSqliteRuoyiSysRoleMenuMapper = require('../../../app/service/db/sqlite/ruoyi/SysRoleMenuMapper');
+import ExportDbSqliteRuoyiSysUserMapper = require('../../../app/service/db/sqlite/ruoyi/SysUserMapper');
+import ExportDbSqliteRuoyiSysUserPostMapper = require('../../../app/service/db/sqlite/ruoyi/SysUserPostMapper');
+import ExportDbSqliteRuoyiSysUserRoleMapper = require('../../../app/service/db/sqlite/ruoyi/SysUserRoleMapper');
 
 declare module 'egg' {
   interface IService {
@@ -99,6 +118,29 @@ declare module 'egg' {
           sysUserMapper: AutoInstanceType<typeof ExportDbMysqlRuoyiSysUserMapper>;
           sysUserPostMapper: AutoInstanceType<typeof ExportDbMysqlRuoyiSysUserPostMapper>;
           sysUserRoleMapper: AutoInstanceType<typeof ExportDbMysqlRuoyiSysUserRoleMapper>;
+        }
+      }
+      sqlite: {
+        ruoyi: {
+          genTableColumnMapper: AutoInstanceType<typeof ExportDbSqliteRuoyiGenTableColumnMapper>;
+          genTableMapper: AutoInstanceType<typeof ExportDbSqliteRuoyiGenTableMapper>;
+          sysConfigMapper: AutoInstanceType<typeof ExportDbSqliteRuoyiSysConfigMapper>;
+          sysDeptMapper: AutoInstanceType<typeof ExportDbSqliteRuoyiSysDeptMapper>;
+          sysDictDataMapper: AutoInstanceType<typeof ExportDbSqliteRuoyiSysDictDataMapper>;
+          sysDictTypeMapper: AutoInstanceType<typeof ExportDbSqliteRuoyiSysDictTypeMapper>;
+          sysJobLogMapper: AutoInstanceType<typeof ExportDbSqliteRuoyiSysJobLogMapper>;
+          sysJobMapper: AutoInstanceType<typeof ExportDbSqliteRuoyiSysJobMapper>;
+          sysLogininforMapper: AutoInstanceType<typeof ExportDbSqliteRuoyiSysLogininforMapper>;
+          sysMenuMapper: AutoInstanceType<typeof ExportDbSqliteRuoyiSysMenuMapper>;
+          sysNoticeMapper: AutoInstanceType<typeof ExportDbSqliteRuoyiSysNoticeMapper>;
+          sysOperLogMapper: AutoInstanceType<typeof ExportDbSqliteRuoyiSysOperLogMapper>;
+          sysPostMapper: AutoInstanceType<typeof ExportDbSqliteRuoyiSysPostMapper>;
+          sysRoleDeptMapper: AutoInstanceType<typeof ExportDbSqliteRuoyiSysRoleDeptMapper>;
+          sysRoleMapper: AutoInstanceType<typeof ExportDbSqliteRuoyiSysRoleMapper>;
+          sysRoleMenuMapper: AutoInstanceType<typeof ExportDbSqliteRuoyiSysRoleMenuMapper>;
+          sysUserMapper: AutoInstanceType<typeof ExportDbSqliteRuoyiSysUserMapper>;
+          sysUserPostMapper: AutoInstanceType<typeof ExportDbSqliteRuoyiSysUserPostMapper>;
+          sysUserRoleMapper: AutoInstanceType<typeof ExportDbSqliteRuoyiSysUserRoleMapper>;
         }
       }
     }
