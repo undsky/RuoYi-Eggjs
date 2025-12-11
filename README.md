@@ -152,7 +152,7 @@ ruoyi-eggjs/
 ### 环境要求
 
 - Node.js >= 20.0.0
-- MySQL >= 5.7
+- 数据库（三选一）：MySQL >= 5.7 / PostgreSQL >= 10 / SQLite >= 3
 - Redis >= 5.0
 
 ### 1. 克隆项目
@@ -170,40 +170,102 @@ npm install
 
 ### 3. 导入数据库
 
-导入若依数据库脚本到 MySQL：
+项目支持 MySQL、PostgreSQL、SQLite 三种数据库，SQL 脚本位于 `sql/` 目录下：
+
+```
+sql/
+├── mysql/     # MySQL 初始化脚本
+├── pgsql/     # PostgreSQL 初始化脚本
+└── sqlite/    # SQLite 初始化脚本
+```
+
+#### MySQL
 
 ```sql
 -- 创建数据库
 CREATE DATABASE IF NOT EXISTS ruoyi DEFAULT CHARSET utf8mb4 COLLATE utf8mb4_general_ci;
 
 -- 导入数据表和数据
--- SQL 脚本位于项目 sql/ 文件夹下
+mysql -u root -p ruoyi < sql/mysql/ry_20250522.sql
+```
+
+#### PostgreSQL
+
+```sql
+-- 创建数据库
+CREATE DATABASE ruoyi;
+\c ruoyi
+
+-- 导入数据表和数据
+psql -U ruoyi -d ruoyi -f sql/pgsql/ry_20250522.sql
+```
+
+#### SQLite
+
+SQLite 无需创建数据库，直接导入脚本即可：
+
+```bash
+sqlite3 ruoyi.db < sql/sqlite/ry_20250522.sql
 ```
 
 ### 4. 配置数据库和 Redis
 
+根据选择的数据库类型，在 `config/config.local.js` 中配置：
+
+#### MySQL 配置
+
 ```javascript
-// config/config.local.js
-
 config.mysql = {
-    // 启用驼峰命名转换：数据库字段 user_name -> userName
-    camelCase: true,
-    clients: {
-      ruoyi: {
-        host: "127.0.0.1",
-        user: "root",
-        password: "jyx123",
-        database: "ruoyi",
-      },
+  camelCase: true, // 启用驼峰命名转换：user_name -> userName
+  clients: {
+    ruoyi: {
+      host: "127.0.0.1",
+      user: "root",
+      password: "your_password",
+      database: "ruoyi",
     },
-  };
+  },
+};
+```
 
-  const redis = {
-    port: 6379,
-    host: "127.0.0.1",
-    password: "",
-    db: 5,
-  };
+#### PostgreSQL 配置
+
+```javascript
+config.pgsql = {
+  camelCase: true,
+  clients: {
+    ruoyi: {
+      host: "127.0.0.1",
+      user: "ruoyi",
+      password: "your_password",
+      database: "ruoyi",
+    },
+  },
+};
+```
+
+#### SQLite 配置
+
+```javascript
+config.sqlite = {
+  camelCase: true,
+  clients: {
+    ruoyi: {
+      database: "./ruoyi.db", // 数据库文件路径
+    },
+  },
+};
+```
+
+#### Redis 配置
+
+```javascript
+const redis = {
+  port: 6379,
+  host: "127.0.0.1",
+  password: "",
+  db: 5,
+};
 ```
 
 ### 5. 运行项目
