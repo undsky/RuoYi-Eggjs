@@ -21,7 +21,7 @@ class GenUtils {
     genTable.functionAuthor = '姜彦汐';
     genTable.createBy = operName;
     genTable.tplCategory = GenConstants.TPL_CRUD;
-    genTable.tplWebType = 'element-ui';
+    genTable.tplWebType = 'element-plus';
   }
 
   /**

@@ -40,7 +40,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </selects>
 
     <selects id="selectDbTableColumnsByName" parameterType="String" resultMap="GenTableColumnResult">
-		select name as column_name, (case when ("notnull" = 1 <![CDATA[ && ]]> pk != 1) then '1' else '0' end) as is_required, (case when pk = 1 then '1' else '0' end) as is_pk, cid as sort, '' as column_comment, '0' as is_increment, type as column_type
+		select name as column_name, (case when ("notnull" = 1 and pk != 1) then '1' else '0' end) as is_required, (case when pk = 1 then '1' else '0' end) as is_pk, cid as sort, '' as column_comment, '0' as is_increment, type as column_type
 		from pragma_table_info(#{tableName})
 		order by cid
 	</selects>
