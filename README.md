@@ -8,6 +8,10 @@
 
 基于 Egg.js 框架开发的企业级后台管理系统，100% 实现若依（RuoYi-Vue）系统功能。采用 MyBatis XML 风格编写 SQL，完全复用若依原有的数据库结构和 MyBatis XML 映射文件。
 
+
+![公众号](https://cdn.undsky.com/img/ghss.png)
+ > 关注公众号，聚焦 AI 应用落地与开发经验分享
+
 ## 📋 快速导航
 
 - [前端项目](#前端项目) - 配置 Vue3 前端对接
