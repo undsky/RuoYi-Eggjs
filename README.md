@@ -8,9 +8,18 @@
 
 基于 Egg.js 框架开发的企业级后台管理系统，100% 实现若依（RuoYi-Vue）系统功能。采用 MyBatis XML 风格编写 SQL，完全复用若依原有的数据库结构和 MyBatis XML 映射文件。
 
-| 公众号                                       | 微信群                                                         |
+| 公众号                                       | 联系我（注明来意）                                                          |
 | -------------------------------------------- | -------------------------------------------------------------- |
-| ![公众号](https://cdn.undsky.com/img/gh.jpg) | ![微信群](https://cdn.undsky.com/img/doudouqun.png?v=20250117) |
+| ![公众号](https://cdn.undsky.com/img/gh.jpg) | ![微信群](https://cdn.undsky.com/img/wx.jpg) |
+
+
+## 演示项目
+
+
+- 🖥️ Element Plus 版本：http://ry.undsky.com/admin/login?redirect=/index
+- 🎨 Vue3 Prettier 版本：http://ry2.undsky.com/login?redirect=/index
+- 🐻 BearJia Vue3 版本：http://ry1.undsky.com/login3
+
 
 ## 📋 快速导航
 
