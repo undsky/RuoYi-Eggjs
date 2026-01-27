@@ -86,9 +86,11 @@ class UserService extends Service {
   async selectUserById(userId) {
     const { ctx } = this;
 
-    let user = await ctx.helper.getDB(ctx).sysUserMapper.selectUserById([], {
+    const users = await ctx.helper.getDB(ctx).sysUserMapper.selectUserById([], {
       userId,
     });
+
+    let user = Array.isArray(users) ? users[0] : users;
     
    user = await this.selectUserWithDeptAndRoles(user);
     

@@ -31,7 +31,7 @@ class LoginService extends Service {
       throw new Error("用户不存在或密码错误");
     }
 
-    const user = users;
+    const user = Array.isArray(users) ? users[0] : users;
 
     // 2. 检查用户状态
     if (user.delFlag === "2") {
