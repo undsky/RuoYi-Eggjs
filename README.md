@@ -8,9 +8,9 @@
 
 基于 Egg.js 框架开发的企业级后台管理系统，100% 实现若依（RuoYi-Vue）系统功能。采用 MyBatis XML 风格编写 SQL，完全复用若依原有的数据库结构和 MyBatis XML 映射文件。
 
-
-![公众号](https://cdn.undsky.com/img/ghss.png)
- > 关注公众号，聚焦 AI 应用落地与开发经验分享
+| 公众号                                       | 微信群                                                         |
+| -------------------------------------------- | -------------------------------------------------------------- |
+| ![公众号](https://cdn.undsky.com/img/gh.jpg) | ![微信群](https://cdn.undsky.com/img/doudouqun.png?v=20250117) |
 
 ## 📋 快速导航
 
@@ -37,7 +37,7 @@
 在前端项目的 `vite.config.js` 中设置后端接口地址：
 
 ```javascript
-const baseUrl = 'http://localhost:7001' // 后端接口
+const baseUrl = "http://localhost:7001"; // 后端接口
 ```
 
 ## ✨ 特性
@@ -54,27 +54,27 @@ const baseUrl = 'http://localhost:7001' // 后端接口
 - 🛡️ **限流保护** - API 请求频率限制，防止恶意攻击（[文档](https://github.com/undsky/ruoyi-eggjs-ratelimiter)）
 - 🔐 **JWT 认证** - 基于 JWT 的用户认证和权限控制（[文档](https://github.com/okoala/egg-jwt)）
 - 🔒 **权限控制** - 类似 Spring Boot `@PreAuthorize` 的权限装饰器，支持通配符、AND/OR 逻辑
-- 💡 **IDE 智能提示**  - 完整的 TypeScript 类型定义，支持代码跳转、智能提示和参数提示
+- 💡 **IDE 智能提示** - 完整的 TypeScript 类型定义，支持代码跳转、智能提示和参数提示
 
 ### 技术栈
 
-| 技术 | 版本 | 说明 |
-| --- | --- | --- |
-| [Node.js](https://nodejs.org) | >=20.0.0 | JavaScript 运行时 |
-| [Egg.js](https://eggjs.org) | ^3 | 企业级 Node.js 框架 |
+| 技术                          | 版本     | 说明                |
+| ----------------------------- | -------- | ------------------- |
+| [Node.js](https://nodejs.org) | >=20.0.0 | JavaScript 运行时   |
+| [Egg.js](https://eggjs.org)   | ^3       | 企业级 Node.js 框架 |
 
 ### 自研插件
 
-| 插件 | 说明 | 文档 |
-| --- | --- | --- |
-| [ruoyi-eggjs-mybatis](https://github.com/undsky/ruoyi-eggjs-mybatis) | MyBatis XML SQL 映射 | [README](https://github.com/undsky/ruoyi-eggjs-mybatis) |
-| [ruoyi-eggjs-mysql](https://github.com/undsky/ruoyi-eggjs-mysql) | MySQL 数据库操作 | [README](https://github.com/undsky/ruoyi-eggjs-mysql) |
-| [ruoyi-eggjs-pgsql](https://github.com/undsky/ruoyi-eggjs-pgsql) | PostgreSQL 数据库操作 | [README](https://github.com/undsky/ruoyi-eggjs-pgsql) |
-| [ruoyi-eggjs-sqlite](https://github.com/undsky/ruoyi-eggjs-sqlite) | SQLite 数据库操作 | [README](https://github.com/undsky/ruoyi-eggjs-sqlite) |
-| [ruoyi-eggjs-cache](https://github.com/undsky/ruoyi-eggjs-cache) | 多层级缓存 | [README](https://github.com/undsky/ruoyi-eggjs-cache) |
-| [ruoyi-eggjs-ratelimiter](https://github.com/undsky/ruoyi-eggjs-ratelimiter) | API 限流 | [README](https://github.com/undsky/ruoyi-eggjs-ratelimiter) |
-| [ruoyi-eggjs-cli](https://github.com/undsky/ruoyi-eggjs-cli) | 代码生成工具、FRP 内网穿透 | [README](https://github.com/undsky/ruoyi-eggjs-cli) |
-| [ruoyi-eggjs-handlebars](https://github.com/undsky/ruoyi-eggjs-handlebars) | Handlebars 模板引擎 | [README](https://github.com/undsky/ruoyi-eggjs-handlebars) |
+| 插件                                                                         | 说明                       | 文档                                                        |
+| ---------------------------------------------------------------------------- | -------------------------- | ----------------------------------------------------------- |
+| [ruoyi-eggjs-mybatis](https://github.com/undsky/ruoyi-eggjs-mybatis)         | MyBatis XML SQL 映射       | [README](https://github.com/undsky/ruoyi-eggjs-mybatis)     |
+| [ruoyi-eggjs-mysql](https://github.com/undsky/ruoyi-eggjs-mysql)             | MySQL 数据库操作           | [README](https://github.com/undsky/ruoyi-eggjs-mysql)       |
+| [ruoyi-eggjs-pgsql](https://github.com/undsky/ruoyi-eggjs-pgsql)             | PostgreSQL 数据库操作      | [README](https://github.com/undsky/ruoyi-eggjs-pgsql)       |
+| [ruoyi-eggjs-sqlite](https://github.com/undsky/ruoyi-eggjs-sqlite)           | SQLite 数据库操作          | [README](https://github.com/undsky/ruoyi-eggjs-sqlite)      |
+| [ruoyi-eggjs-cache](https://github.com/undsky/ruoyi-eggjs-cache)             | 多层级缓存                 | [README](https://github.com/undsky/ruoyi-eggjs-cache)       |
+| [ruoyi-eggjs-ratelimiter](https://github.com/undsky/ruoyi-eggjs-ratelimiter) | API 限流                   | [README](https://github.com/undsky/ruoyi-eggjs-ratelimiter) |
+| [ruoyi-eggjs-cli](https://github.com/undsky/ruoyi-eggjs-cli)                 | 代码生成工具、FRP 内网穿透 | [README](https://github.com/undsky/ruoyi-eggjs-cli)         |
+| [ruoyi-eggjs-handlebars](https://github.com/undsky/ruoyi-eggjs-handlebars)   | Handlebars 模板引擎        | [README](https://github.com/undsky/ruoyi-eggjs-handlebars)  |
 
 ## 📦 项目结构
 
@@ -292,8 +292,6 @@ npm start
 npm stop
 ```
 
-
-
 #### 命令说明
 
 ```bash
@@ -318,6 +316,7 @@ npm stop
 打开浏览器访问：[http://localhost:7001](http://localhost:7001)
 
 测试接口：
+
 - 版本信息：`GET http://localhost:7001/version`
 
 ## 🚢 部署说明
