@@ -12,6 +12,9 @@ module.exports = (options, app) => {
 
     if (ctx.response.type && "application/json" != ctx.response.type) return;
 
+    // OpenAPI spec 需返回原始 JSON，不包装为 { code, msg, data }
+    if (ctx.path === "/tool/swagger/spec.json" || ctx.path === "/swagger-ui/spec.json") return;
+
     if (ctx.body) {
       if (!ctx.body.code) {
         ctx.body = {

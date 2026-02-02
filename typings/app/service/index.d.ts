@@ -28,6 +28,7 @@ import ExportSystemPost = require('../../../app/service/system/post');
 import ExportSystemRole = require('../../../app/service/system/role');
 import ExportSystemUser = require('../../../app/service/system/user');
 import ExportToolGen = require('../../../app/service/tool/gen');
+import ExportToolSwagger = require('../../../app/service/tool/swagger');
 import ExportDbMysqlRuoyiGenTableColumnMapper = require('../../../app/service/db/mysql/ruoyi/GenTableColumnMapper');
 import ExportDbMysqlRuoyiGenTableMapper = require('../../../app/service/db/mysql/ruoyi/GenTableMapper');
 import ExportDbMysqlRuoyiSysConfigMapper = require('../../../app/service/db/mysql/ruoyi/SysConfigMapper');
@@ -114,6 +115,7 @@ declare module 'egg' {
     }
     tool: {
       gen: AutoInstanceType<typeof ExportToolGen>;
+      swagger: AutoInstanceType<typeof ExportToolSwagger>;
     }
     db: {
       mysql: {

@@ -28,14 +28,14 @@ module.exports = (appInfo) => {
 
   config.cors = {
     allowMethods: "GET,POST,PUT,DELETE,PATCH",
-    // credentials: true,
-    // origin: () => '*'
+    origin: (ctx) => ctx.get("origin") || "*",
+    allowHeaders: "Content-Type,Authorization",
   };
 
   config.accessControl = {
-    // 精确匹配：排除 /version、/login、/register、/captchaImage、/druid/login.html 和根路径 /
+    // 精确匹配：排除 /version、/login、/register、/captchaImage、/druid/login.html、/tool/swagger、/swagger-ui 和根路径 /
     // 其他路径都需要 JWT 验证
-    match: /^\/(?!(?:version|login|register|captchaImage|druid\/login\.html)(?:\/|$))(?!$)/i,
+    match: /^\/(?!(?:version|login|register|captchaImage|druid\/login\.html|tool\/swagger|swagger-ui)(?:\/|$))(?!$)/i,
   };
 
   config.jwt = {

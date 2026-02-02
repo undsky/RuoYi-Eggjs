@@ -25,6 +25,8 @@ import ExportSystemProfile = require('../../../app/controller/system/profile');
 import ExportSystemRole = require('../../../app/controller/system/role');
 import ExportSystemUser = require('../../../app/controller/system/user');
 import ExportToolGen = require('../../../app/controller/tool/gen');
+import ExportToolSwaggerUi = require('../../../app/controller/tool/swagger-ui');
+import ExportToolSwagger = require('../../../app/controller/tool/swagger');
 
 declare module 'egg' {
   interface IController {
@@ -55,6 +57,8 @@ declare module 'egg' {
     }
     tool: {
       gen: ExportToolGen;
+      swaggerUi: ExportToolSwaggerUi;
+      swagger: ExportToolSwagger;
     }
   }
 }
